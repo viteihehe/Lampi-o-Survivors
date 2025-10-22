@@ -31,11 +31,17 @@ typedef struct {
 } MapaDirecoes;
 
 typedef struct {
+    int tempo_resfriamento;
+    long tempo_ultimo_disparo;
+} Arma;
+
+typedef struct {
     ALLEGRO_BITMAP *sprite;
     int x;
     int y;
     MapaDirecoes movimento;
     MapaDirecoes mira;
+    Arma arma;
 } Jogador;
 
 typedef struct {
@@ -148,27 +154,34 @@ void efetuar_movimento(MapaDirecoes teclas, Jogador *jogador) {
 }
 
 void gerar_bala(ALLEGRO_EVENT evento, Bala **balas, int *dest_quant,
-                Jogador jogador) {
+                Jogador *jogador, ALLEGRO_TIMER *tick_timer) {
 
     // O jogador tem que estar mirando em alguma direção
-    if (!(jogador.mira.cima || jogador.mira.baixo || jogador.mira.esq ||
-          jogador.mira.dir)) {
+    if (!(jogador->mira.cima || jogador->mira.baixo || jogador->mira.esq ||
+          jogador->mira.dir)) {
         return;
     }
 
     // Não pode estar mirando em direções opostas
-    if ((jogador.mira.cima && jogador.mira.baixo) ||
-        (jogador.mira.esq && jogador.mira.dir)) {
+    if ((jogador->mira.cima && jogador->mira.baixo) ||
+        (jogador->mira.esq && jogador->mira.dir)) {
         return;
     }
 
-    Bala bala_temp = {al_load_bitmap("./materiais/sprites/bala.png"), jogador.x,
-                      jogador.y, jogador.mira};
+    // Arma não pode estar resfriando
+    if (al_get_timer_count(tick_timer) < jogador->arma.tempo_ultimo_disparo) {
+        return;
+    }
+
+    Bala bala_temp = {al_load_bitmap("./materiais/sprites/bala.png"),
+                      jogador->x, jogador->y, jogador->mira};
 
     (*dest_quant)++;
-
     *balas = realloc(*balas, sizeof(Bala) * *dest_quant);
     (*balas)[*dest_quant - 1] = bala_temp;
+
+    jogador->arma.tempo_ultimo_disparo =
+        al_get_timer_count(tick_timer) + jogador->arma.tempo_resfriamento;
 }
 
 #define VELOCIDADE_BALA 10;
@@ -221,7 +234,9 @@ int main() {
     Jogador canga = {al_load_bitmap("./materiais/sprites/canga.png"),
                      50,
                      50,
-                     {false, false, false, false}};
+                     {false, false, false, false},
+                     {false, false, false, false},
+                     {60, 0}};
 
     int quant_balas = 0;
     Bala *balas = NULL;
@@ -235,6 +250,7 @@ int main() {
     ALLEGRO_EVENT evento;
     for (;;) {
         al_wait_for_event(fila, &evento);
+
         capturar_movimento(evento, &canga.movimento);
         capturar_mira(evento, &canga.mira);
 
@@ -243,7 +259,7 @@ int main() {
         }
 
         if (evento.type == ALLEGRO_EVENT_TIMER) {
-            gerar_bala(evento, &balas, &quant_balas, canga);
+            gerar_bala(evento, &balas, &quant_balas, &canga, tick_timer);
             efetuar_movimento(canga.movimento, &canga);
 
             // ----------
