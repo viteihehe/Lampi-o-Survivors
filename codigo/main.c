@@ -149,11 +149,21 @@ void efetuar_movimento(MapaDirecoes teclas, Jogador *jogador) {
 
 void gerar_bala(ALLEGRO_EVENT evento, Bala **balas, int *dest_quant,
                 Jogador jogador) {
-    MapaDirecoes direcoes;
-    capturar_mira(evento, &direcoes);
+
+    // O jogador tem que estar mirando em alguma direção
+    if (!(jogador.mira.cima || jogador.mira.baixo || jogador.mira.esq ||
+          jogador.mira.dir)) {
+        return;
+    }
+
+    // Não pode estar mirando em direções opostas
+    if ((jogador.mira.cima && jogador.mira.baixo) ||
+        (jogador.mira.esq && jogador.mira.dir)) {
+        return;
+    }
 
     Bala bala_temp = {al_load_bitmap("./materiais/sprites/bala.png"), jogador.x,
-                      jogador.y, direcoes};
+                      jogador.y, jogador.mira};
 
     (*dest_quant)++;
 
@@ -232,13 +242,8 @@ int main() {
             break;
         }
 
-        if (evento.type == ALLEGRO_EVENT_KEY_DOWN) {
-            if (evento.keyboard.keycode == ALLEGRO_KEY_Q) {
-                gerar_bala(evento, &balas, &quant_balas, canga);
-            }
-        }
-
         if (evento.type == ALLEGRO_EVENT_TIMER) {
+            gerar_bala(evento, &balas, &quant_balas, canga);
             efetuar_movimento(canga.movimento, &canga);
 
             // ----------
@@ -249,8 +254,8 @@ int main() {
 
             al_draw_bitmap(canga.sprite, canga.x - 32, canga.y - 32,
                            ALLEGRO_FLIP_HORIZONTAL);
-            al_draw_filled_circle(canga.x, canga.y, 5,
-                                  al_map_rgb(100, 100, 255));
+            // al_draw_filled_circle(canga.x, canga.y, 5,
+            //                       al_map_rgb(100, 100, 255));
             al_flip_display();
         }
     }
