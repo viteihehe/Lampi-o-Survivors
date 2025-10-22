@@ -21,7 +21,6 @@
 #define VEL_JOGADOR 3 // Em pixels
 #define VEL_BALA 10   // Em frames
 
-#define VELOCIDADE 3
 #define LARGURA 1280
 #define ALTURA 720
 #define FPS 60
@@ -74,15 +73,14 @@ typedef struct {
 } BalaInimigo;
 
 typedef struct {
-    float posx;
-    float posy;
+    int posx;
+    int posy;
     ALLEGRO_BITMAP *sprite;
     int vida;
     int dano;
     float velocidade;
     int vivo;
     int ultimo_disparo;
-
 } Formiga;
 
 void capturar_movimento(ALLEGRO_EVENT evento, MapaDirecoes *teclas) {
@@ -263,7 +261,6 @@ void frames(int *contador_frames, int frame_delay, int *frame_atual_tatu,
 }
 
 // Lógica do inimigo tatu
-
 void criarTatu(Homem_tatu homem_tatus[], double *counts, float *ultimo_spawn,
                int cooldown, int *indice_tatu, ALLEGRO_BITMAP *sprite_tatu) {
 
@@ -540,24 +537,6 @@ void desenhoFormiga(Formiga formigas[], int indice_formiga,
     }
 }
 
-void efetuar_movimento(MapaDirecoes teclas, Jogador *jogador) {
-    if (teclas.cima && jogador->y > 0) {
-        jogador->y -= VELOCIDADE;
-    }
-
-    if (teclas.baixo && jogador->y < ALTURA) {
-        jogador->y += VELOCIDADE;
-    }
-
-    if (teclas.esq && jogador->x > 0) {
-        jogador->x -= VELOCIDADE;
-    }
-
-    if (teclas.dir && jogador->x < LARGURA) {
-        jogador->x += VELOCIDADE;
-    }
-}
-
 int main() {
     // ----------
     // Inicialização
@@ -580,7 +559,7 @@ int main() {
     al_start_timer(tick_timer);
 
     // ----------
-    // Entidades
+    // Jogador
     // ----------
     Jogador canga = {al_load_bitmap("./materiais/sprites/canga.png"),
                      50,
@@ -589,47 +568,48 @@ int main() {
                      {false, false, false, false},
                      {60, 0}};
 
+    int quant_balas = 0;
+    Bala *balas = NULL;
+
     //---------
     // Inimigos
     //---------
-    // Homem tatu
+
+    // Homem Tatu
     Homem_tatu *homem_tatus = (Homem_tatu *)malloc(50 * sizeof(Homem_tatu));
     ALLEGRO_BITMAP *sprite_tatu =
         al_load_bitmap("./materiais/sprites/peba2_1.png");
-    // inicialização tatu
+
     int indice_tatu = 0;
     float ultimo_spawn_tatu = 0;
     const float cooldown_tatu = 2;
-    // fim tatu
 
-    // formiga
+    // Formiga
     BalaInimigo *formiga_bala =
         (BalaInimigo *)malloc(2000 * sizeof(BalaInimigo));
     Formiga *formigas = (Formiga *)malloc(50 * sizeof(Formiga));
     ALLEGRO_BITMAP *sprite_formiga =
         al_load_bitmap("./materiais/sprites/formiga2.png");
-    // Inicialização formiga
+
     int indice_formiga = 0;
     float ultimo_spawn_formiga = 0;
     const float cooldown_formiga = 5;
     const float disparo_cooldown = 2;
     int cont_disparo = 0;
-    // fim formiga
 
-    // para animação
+    //---------
+    // Animações
+    //---------
     int contador_frames = 0;
     const int frame_delay = 10;
     int frame_atual_formiga = 0;
     const int total_frames_formiga = 2;
     const int total_frames_tatu = 2;
     int frame_atual_tatu = 0;
-    // fim da parte de animação
 
-    //----------
-
-    int quant_balas = 0;
-    Bala *balas = NULL;
-
+    //---------
+    // Cenário
+    //---------
     ALLEGRO_BITMAP *cenario =
         al_load_bitmap("./materiais/sprites/background.png");
 
@@ -649,10 +629,6 @@ int main() {
 
         if (evento.type == ALLEGRO_EVENT_TIMER) {
             gerar_bala(evento, &balas, &quant_balas, &canga, tick_timer);
-        }
-
-        if (evento.type == ALLEGRO_EVENT_TIMER) {
-            efetuar_movimento(canga.movimento, &canga);
 
             //--------
             // Inimigos
@@ -663,13 +639,13 @@ int main() {
                    &frame_atual_formiga, total_frames_tatu,
                    total_frames_formiga);
 
-            // tatu
+            // Homem Tatu
             criarTatu(homem_tatus, &tempo_em_segundos, &ultimo_spawn_tatu,
                       cooldown_tatu, &indice_tatu, sprite_tatu);
             logicaTatu(homem_tatus, &indice_tatu, canga);
             colisaoTatu(homem_tatus, &indice_tatu);
 
-            // formiga
+            // Formiga
             criacaoFormiga(formigas, &tempo_em_segundos, sprite_formiga,
                            &ultimo_spawn_formiga, cooldown_formiga,
                            &indice_formiga);
@@ -677,19 +653,18 @@ int main() {
                           &tempo_em_segundos, disparo_cooldown, &cont_disparo);
             logicaBalaFormiga(formiga_bala, &cont_disparo);
             colisaoFormiga(formigas, &indice_formiga);
-            //---------
 
             // ----------
             // Frames
             // ----------
             al_draw_bitmap(cenario, 0, 0, ALLEGRO_FLIP_HORIZONTAL);
-            mover_balas(balas, quant_balas);
-            mover_jogador(canga.movimento, &canga);
 
-            // Desenho inimigos
+            mover_jogador(canga.movimento, &canga);
             desenhoTatu(homem_tatus, frame_atual_tatu, indice_tatu, canga);
             desenhoFormiga(formigas, indice_formiga, frame_atual_formiga, canga,
                            formiga_bala, cont_disparo);
+
+            mover_balas(balas, quant_balas);
 
             al_flip_display();
         }
