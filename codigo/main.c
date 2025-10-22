@@ -18,7 +18,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define VELOCIDADE 3
+#define VEL_JOGADOR 3 // Em pixels
+#define VEL_BALA 10   // Em frames
+
 #define LARGURA 1280
 #define ALTURA 720
 #define FPS 60
@@ -135,22 +137,25 @@ void capturar_mira(ALLEGRO_EVENT evento, MapaDirecoes *teclas) {
     }
 }
 
-void efetuar_movimento(MapaDirecoes teclas, Jogador *jogador) {
+void mover_jogador(MapaDirecoes teclas, Jogador *jogador) {
     if (teclas.cima && jogador->y > 0) {
-        jogador->y -= VELOCIDADE;
+        jogador->y -= VEL_JOGADOR;
     }
 
     if (teclas.baixo && jogador->y < ALTURA) {
-        jogador->y += VELOCIDADE;
+        jogador->y += VEL_JOGADOR;
     }
 
     if (teclas.esq && jogador->x > 0) {
-        jogador->x -= VELOCIDADE;
+        jogador->x -= VEL_JOGADOR;
     }
 
     if (teclas.dir && jogador->x < LARGURA) {
-        jogador->x += VELOCIDADE;
+        jogador->x += VEL_JOGADOR;
     }
+
+    al_draw_bitmap(jogador->sprite, jogador->x - 32, jogador->y - 32,
+                   ALLEGRO_FLIP_HORIZONTAL);
 }
 
 void gerar_bala(ALLEGRO_EVENT evento, Bala **balas, int *dest_quant,
@@ -184,23 +189,22 @@ void gerar_bala(ALLEGRO_EVENT evento, Bala **balas, int *dest_quant,
         al_get_timer_count(tick_timer) + jogador->arma.tempo_resfriamento;
 }
 
-#define VELOCIDADE_BALA 10;
 void mover_balas(Bala *balas, int quant_balas) {
     for (int i = 0; i < quant_balas; i++) {
         if (balas[i].direcoes.cima) {
-            balas[i].y -= VELOCIDADE_BALA;
+            balas[i].y -= VEL_BALA;
         }
 
         if (balas[i].direcoes.baixo) {
-            balas[i].y += VELOCIDADE_BALA;
+            balas[i].y += VEL_BALA;
         }
 
         if (balas[i].direcoes.esq) {
-            balas[i].x -= VELOCIDADE_BALA;
+            balas[i].x -= VEL_BALA;
         }
 
         if (balas[i].direcoes.dir) {
-            balas[i].x += VELOCIDADE_BALA;
+            balas[i].x += VEL_BALA;
         }
 
         al_draw_bitmap(balas[i].sprite, balas[i].x - 8, balas[i].y - 8,
@@ -260,18 +264,14 @@ int main() {
 
         if (evento.type == ALLEGRO_EVENT_TIMER) {
             gerar_bala(evento, &balas, &quant_balas, &canga, tick_timer);
-            efetuar_movimento(canga.movimento, &canga);
 
             // ----------
             // Frames
             // ----------
             al_draw_bitmap(cenario, 0, 0, ALLEGRO_FLIP_HORIZONTAL);
             mover_balas(balas, quant_balas);
+            mover_jogador(canga.movimento, &canga);
 
-            al_draw_bitmap(canga.sprite, canga.x - 32, canga.y - 32,
-                           ALLEGRO_FLIP_HORIZONTAL);
-            // al_draw_filled_circle(canga.x, canga.y, 5,
-            //                       al_map_rgb(100, 100, 255));
             al_flip_display();
         }
     }
