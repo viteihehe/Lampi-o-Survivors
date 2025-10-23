@@ -6,6 +6,7 @@
 #include <allegro5/bitmap.h>
 #include <allegro5/bitmap_draw.h>
 #include <allegro5/bitmap_io.h>
+#include <allegro5/color.h>
 #include <allegro5/display.h>
 #include <allegro5/events.h>
 #include <allegro5/keyboard.h>
@@ -22,11 +23,100 @@
 #define VEL_BALA 10   // Em frames
 
 #define VELOCIDADE 3
-#define LARGURA 1280
-#define ALTURA 720
+#define LARGURA 768
+#define ALTURA 768
 #define FPS 60
 
+#define MAPA_LINHAS 16
+#define MAPA_COLUNAS 16
+#define TAM_QUADRADOS 48
+
 typedef enum { CIMA, BAIXO, DIREITA, ESQUERDA } Direcoes;
+
+int mapa_inicial[MAPA_LINHAS][MAPA_COLUNAS] = {
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 1},
+    {1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1},
+    {1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1},
+    {1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1},
+    {1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1},
+    {1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1},
+    {1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+};
+
+void renderizar_mapa() {
+    for (int lin = 0; lin < MAPA_LINHAS; lin++) {
+        for (int col = 0; col < MAPA_COLUNAS; col++) {
+            int x = col * TAM_QUADRADOS;
+            int y = lin * TAM_QUADRADOS;
+
+            if (mapa_inicial[lin][col] == 1) {
+                al_draw_filled_rectangle(x, y, x + TAM_QUADRADOS,
+                                         y + TAM_QUADRADOS,
+                                         al_map_rgb(255, 100, 100));
+            }
+
+            else {
+                al_draw_filled_rectangle(x, y, x + TAM_QUADRADOS,
+                                         y + TAM_QUADRADOS,
+                                         al_map_rgb(100, 100, 100));
+            }
+        }
+    }
+}
+
+int esta_colidindo_cenario(int x, int y) {
+    int cel_x;
+    int cel_y;
+
+    int espaco_box = 23;
+
+    // Superior Esquerdo
+    cel_x = (x - espaco_box) / TAM_QUADRADOS;
+    cel_y = (y - espaco_box) / TAM_QUADRADOS;
+    al_draw_filled_circle(x - espaco_box, y - espaco_box, 3,
+                          al_map_rgb(0, 255, 0));
+    if (mapa_inicial[cel_y][cel_x] == 1) {
+        return 1;
+    }
+
+    // Superior Direito
+    cel_x = (x + espaco_box) / TAM_QUADRADOS;
+    cel_y = (y - espaco_box) / TAM_QUADRADOS;
+    al_draw_filled_circle(x + espaco_box, y - espaco_box, 3,
+                          al_map_rgb(0, 255, 0));
+    if (mapa_inicial[cel_y][cel_x] == 1) {
+        return 1;
+    }
+
+    // Inferior Esquerdo
+    cel_x = (x - espaco_box) / TAM_QUADRADOS;
+    cel_y = (y + espaco_box) / TAM_QUADRADOS;
+    al_draw_filled_circle(x - espaco_box, y + espaco_box, 3,
+                          al_map_rgb(0, 255, 0));
+    if (mapa_inicial[cel_y][cel_x] == 1) {
+        return 1;
+    }
+
+    // Inferior Direito
+    cel_x = (x + espaco_box) / TAM_QUADRADOS;
+    cel_y = (y + espaco_box) / TAM_QUADRADOS;
+    al_draw_filled_circle(x + espaco_box, y + espaco_box, 3,
+                          al_map_rgb(0, 255, 0));
+    if (mapa_inicial[cel_y][cel_x] == 1) {
+        return 1;
+    }
+
+    return 0;
+}
 
 typedef struct {
     bool cima;
@@ -169,20 +259,33 @@ void capturar_mira(ALLEGRO_EVENT evento, MapaDirecoes *teclas) {
 }
 
 void mover_jogador(MapaDirecoes teclas, Jogador *jogador) {
+    int x_futuro = jogador->x;
+    int y_futuro = jogador->y;
+
+    // Calculando a próxima posição
     if (teclas.cima && jogador->y > 0) {
-        jogador->y -= VEL_JOGADOR;
+        y_futuro -= VEL_JOGADOR;
     }
 
     if (teclas.baixo && jogador->y < ALTURA) {
-        jogador->y += VEL_JOGADOR;
+        y_futuro += VEL_JOGADOR;
     }
 
     if (teclas.esq && jogador->x > 0) {
-        jogador->x -= VEL_JOGADOR;
+        x_futuro -= VEL_JOGADOR;
     }
 
     if (teclas.dir && jogador->x < LARGURA) {
-        jogador->x += VEL_JOGADOR;
+        x_futuro += VEL_JOGADOR;
+    }
+
+    // Checando se dá pra mover
+    if (!esta_colidindo_cenario(jogador->x, y_futuro)) {
+        jogador->y = y_futuro;
+    }
+
+    if (!esta_colidindo_cenario(x_futuro, jogador->y)) {
+        jogador->x = x_futuro;
     }
 
     al_draw_bitmap(jogador->sprite, jogador->x - 32, jogador->y - 32,
@@ -562,9 +665,9 @@ int main() {
     // ----------
     // Jogador
     // ----------
-    Jogador canga = {al_load_bitmap("./materiais/sprites/canga.png"),
-                     50,
-                     50,
+    Jogador canga = {al_load_bitmap("./materiais/sprites/canga2.png"),
+                     ALTURA / 2,
+                     LARGURA / 2,
                      {false, false, false, false},
                      {false, false, false, false},
                      {60, 0}};
@@ -641,24 +744,29 @@ int main() {
                    total_frames_formiga);
 
             // Homem Tatu
+            /*
             criarTatu(homem_tatus, &tempo_em_segundos, &ultimo_spawn_tatu,
                       cooldown_tatu, &indice_tatu, sprite_tatu);
             logicaTatu(homem_tatus, &indice_tatu, canga);
-            colisaoTatu(homem_tatus, &indice_tatu);
+            colisaoTatu(homem_tatus, &indice_tatu);*/
 
             // Formiga
+            /*
             criacaoFormiga(formigas, &tempo_em_segundos, sprite_formiga,
                            &ultimo_spawn_formiga, cooldown_formiga,
                            &indice_formiga);
             logicaFormiga(formigas, formiga_bala, &indice_formiga, canga,
                           &tempo_em_segundos, disparo_cooldown, &cont_disparo);
             logicaBalaFormiga(formiga_bala, &cont_disparo);
-            colisaoFormiga(formigas, &indice_formiga);
+            colisaoFormiga(formigas, &indice_formiga);*/
 
             // ----------
             // Frames
             // ----------
-            al_draw_bitmap(cenario, 0, 0, ALLEGRO_FLIP_HORIZONTAL);
+            // al_draw_bitmap(cenario, 0, 0, ALLEGRO_FLIP_HORIZONTAL);
+            al_draw_filled_rectangle(0, 0, LARGURA, ALTURA,
+                                     al_map_rgb(0, 0, 0));
+            renderizar_mapa();
 
             mover_jogador(canga.movimento, &canga);
             desenhoTatu(homem_tatus, frame_atual_tatu, indice_tatu, canga);
@@ -666,6 +774,7 @@ int main() {
                            formiga_bala, cont_disparo);
 
             mover_balas(balas, quant_balas);
+            al_draw_filled_circle(canga.x, canga.y, 5, al_map_rgb(255, 0, 0));
 
             al_flip_display();
         }
