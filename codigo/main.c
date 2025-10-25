@@ -24,13 +24,13 @@
 #define VEL_BALA 10   // Em frames
 
 #define VELOCIDADE 3
-#define LARGURA 768
+#define LARGURA 960
 #define ALTURA 768
 #define FPS 60
 
 #define MAPA_LINHAS 16
-#define MAPA_COLUNAS 16
-#define TAM_QUADRADOS 48
+#define MAPA_COLUNAS 20
+#define TAM_BLOCOS 48
 
 typedef enum { CIMA, BAIXO, DIREITA, ESQUERDA } Direcoes;
 typedef enum {
@@ -38,47 +38,96 @@ typedef enum {
     FORMIGA,
 } Ecomportamento;
 
-int mapa_inicial[MAPA_LINHAS][MAPA_COLUNAS] = {
-    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1},
-    {1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+enum EBloco {
+    N, // Nada
+    C, // Cacto
+    P, // Pedra
+    A, // Arbusto
 };
 
-void renderizar_mapa() {
+int mapa_inicial[MAPA_LINHAS][MAPA_COLUNAS] = {
+    {A, A, A, A, A, A, A, A, A, A, A, A, A, A, A, A, P, P, P, P},
+    {A, N, N, N, P, P, N, N, N, N, N, N, N, N, N, N, P, P, P, P},
+    {A, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, P, P},
+    {A, N, C, N, N, N, N, N, C, N, N, N, N, N, N, N, N, N, N, A},
+    {A, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, A},
+    {A, N, N, N, N, N, N, N, N, N, N, N, N, N, N, C, N, N, N, A},
+    {A, N, N, C, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, A},
+    {A, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, P, N, A},
+    {A, N, N, N, N, N, N, N, N, N, N, N, C, N, N, N, N, N, N, A},
+    {A, N, N, N, C, N, N, N, N, N, N, N, N, N, N, N, N, N, N, A},
+    {A, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, A},
+    {A, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, C, N, N, A},
+    {A, N, P, P, N, N, N, N, N, N, N, P, N, N, N, N, N, N, N, A},
+    {A, N, P, N, N, N, P, N, N, N, N, P, P, N, N, N, N, N, N, A},
+    {A, N, N, N, N, N, N, N, N, N, P, P, P, N, N, N, N, N, N, A},
+    {A, A, A, A, A, A, A, A, A, A, P, P, P, P, A, A, A, A, A, A},
+};
+
+typedef struct {
+    ALLEGRO_BITMAP *canga;
+
+    ALLEGRO_BITMAP *areia;
+    ALLEGRO_BITMAP *cacto;
+    ALLEGRO_BITMAP *pedra;
+    ALLEGRO_BITMAP *arbusto;
+
+    ALLEGRO_BITMAP *sombra;
+    ALLEGRO_BITMAP *bala;
+} FolhaSprites;
+
+/*
+    Uma função cujo único propósito é redesenhar o cenário.
+*/
+void redesenhar_mapa(FolhaSprites sprites) {
     for (int lin = 0; lin < MAPA_LINHAS; lin++) {
         for (int col = 0; col < MAPA_COLUNAS; col++) {
-            int x = col * TAM_QUADRADOS;
-            int y = lin * TAM_QUADRADOS;
+            int x = col * TAM_BLOCOS;
+            int y = lin * TAM_BLOCOS;
 
-            if (mapa_inicial[lin][col] == 1) {
-                al_draw_filled_rectangle(x, y, x + TAM_QUADRADOS,
-                                         y + TAM_QUADRADOS,
-                                         al_map_rgb(255, 100, 100));
-            }
+            al_draw_scaled_bitmap(sprites.areia, 0, 0, 16, 16, x, y, 48, 48, 0);
 
-            else {
-                al_draw_filled_rectangle(x, y, x + TAM_QUADRADOS,
-                                         y + TAM_QUADRADOS,
-                                         al_map_rgb(100, 100, 100));
+            switch (mapa_inicial[lin][col]) {
+            case N:
+                // Esse case só serve pra o bloco vazio não cair no default
+                break;
+
+            case C:
+                al_draw_scaled_bitmap(sprites.sombra, 0, 0, 16, 16, x, y, 48,
+                                      48, 0);
+                al_draw_scaled_bitmap(sprites.cacto, 0, 0, 16, 16, x, y, 48, 48,
+                                      0);
+                break;
+
+            case P:
+                al_draw_scaled_bitmap(sprites.sombra, 0, 0, 16, 16, x, y, 48,
+                                      48, 0);
+                al_draw_scaled_bitmap(sprites.pedra, 0, 0, 16, 16, x, y, 48, 48,
+                                      0);
+                break;
+
+            case A:
+                al_draw_scaled_bitmap(sprites.sombra, 0, 0, 16, 16, x, y, 48,
+                                      48, 0);
+                al_draw_scaled_bitmap(sprites.arbusto, 0, 0, 16, 16, x, y, 48,
+                                      48, 0);
+                break;
+
+            default:
+                al_draw_filled_rectangle(x, y, x + TAM_BLOCOS, y + TAM_BLOCOS,
+                                         al_map_rgb(199, 36, 147));
+                break;
             }
         }
     }
 }
 
-int esta_colidindo_cenario(int x, int y, int tam_box) {
+/*
+    Uma função que recebe um par de coordenadas, o tamanho de uma bounding box
+   quadrada e retorna um booleano dizendo se a box toca em alguma peça do
+   cenário ou não.
+*/
+int colide_no_cenario(int x, int y, int tam_box) {
     tam_box /= 2; // Tem que ser sempre a metade pra centralizar
     tam_box -= 1; // Pixelzinho só pra não ficar sempre justo
 
@@ -86,34 +135,38 @@ int esta_colidindo_cenario(int x, int y, int tam_box) {
     int cel_y;
 
     // Superior Esquerdo
-    cel_x = (x - tam_box) / TAM_QUADRADOS;
-    cel_y = (y - tam_box) / TAM_QUADRADOS;
-    al_draw_filled_circle(x - tam_box, y - tam_box, 3, al_map_rgb(0, 255, 0));
-    if (mapa_inicial[cel_y][cel_x] == 1) {
+    cel_x = (x - tam_box) / TAM_BLOCOS;
+    cel_y = (y - tam_box) / TAM_BLOCOS;
+    // al_draw_filled_circle(x - tam_box, y - tam_box, 3, al_map_rgb(0, 255,
+    // 0));
+    if (mapa_inicial[cel_y][cel_x] >= 1) {
         return 1;
     }
 
     // Superior Direito
-    cel_x = (x + tam_box) / TAM_QUADRADOS;
-    cel_y = (y - tam_box) / TAM_QUADRADOS;
-    al_draw_filled_circle(x + tam_box, y - tam_box, 3, al_map_rgb(0, 255, 0));
-    if (mapa_inicial[cel_y][cel_x] == 1) {
+    cel_x = (x + tam_box) / TAM_BLOCOS;
+    cel_y = (y - tam_box) / TAM_BLOCOS;
+    // al_draw_filled_circle(x + tam_box, y - tam_box, 3, al_map_rgb(0, 255,
+    // 0));
+    if (mapa_inicial[cel_y][cel_x] >= 1) {
         return 1;
     }
 
     // Inferior Esquerdo
-    cel_x = (x - tam_box) / TAM_QUADRADOS;
-    cel_y = (y + tam_box) / TAM_QUADRADOS;
-    al_draw_filled_circle(x - tam_box, y + tam_box, 3, al_map_rgb(0, 255, 0));
-    if (mapa_inicial[cel_y][cel_x] == 1) {
+    cel_x = (x - tam_box) / TAM_BLOCOS;
+    cel_y = (y + tam_box) / TAM_BLOCOS;
+    // al_draw_filled_circle(x - tam_box, y + tam_box, 3, al_map_rgb(0, 255,
+    // 0));
+    if (mapa_inicial[cel_y][cel_x] >= 1) {
         return 1;
     }
 
     // Inferior Direito
-    cel_x = (x + tam_box) / TAM_QUADRADOS;
-    cel_y = (y + tam_box) / TAM_QUADRADOS;
-    al_draw_filled_circle(x + tam_box, y + tam_box, 3, al_map_rgb(0, 255, 0));
-    if (mapa_inicial[cel_y][cel_x] == 1) {
+    cel_x = (x + tam_box) / TAM_BLOCOS;
+    cel_y = (y + tam_box) / TAM_BLOCOS;
+    // al_draw_filled_circle(x + tam_box, y + tam_box, 3, al_map_rgb(0, 255,
+    // 0));
+    if (mapa_inicial[cel_y][cel_x] >= 1) {
         return 1;
     }
 
@@ -176,13 +229,15 @@ typedef struct {
 } Inimigo;
 
 // Protótipos
-void colisaoInimigos(Inimigo inimigos[], int *indice, int tamanho, int tamanhosprite);
+void colisaoInimigos(Inimigo inimigos[], int *indice, int tamanho,
+                     int tamanhosprite);
 void reajusteInimigos(Inimigo inimigos[], int *indice);
 void logicaBalaFormiga(BalaInimigo formiga_bala[], int *cont_disparo);
 void compactarBalaFormiga(BalaInimigo formiga_bala[], int *cont_disparo);
 
-
-
+/*
+    Uma função cujo propósito é atualizar o estado das teclas WASD do jogador.
+*/
 void capturar_movimento(ALLEGRO_EVENT evento, MapaDirecoes *teclas) {
     if (evento.type == ALLEGRO_EVENT_KEY_DOWN) {
         switch (evento.keyboard.keycode) {
@@ -225,6 +280,9 @@ void capturar_movimento(ALLEGRO_EVENT evento, MapaDirecoes *teclas) {
     }
 }
 
+/*
+    Uma função cujo propósito é atualizar o estado das teclas seta do jogador.
+*/
 void capturar_mira(ALLEGRO_EVENT evento, MapaDirecoes *teclas) {
     if (evento.type == ALLEGRO_EVENT_KEY_DOWN) {
         switch (evento.keyboard.keycode) {
@@ -267,6 +325,12 @@ void capturar_mira(ALLEGRO_EVENT evento, MapaDirecoes *teclas) {
     }
 }
 
+/*
+    Uma função cujo propósito é atualizar e redesenhar, se possível, a posição
+   do jogador na tela.
+
+   TODO: Mover a parte do redesenho para uma função dedicada.
+*/
 void mover_jogador(MapaDirecoes teclas, Jogador *jogador) {
     int x_futuro = jogador->x;
     int y_futuro = jogador->y;
@@ -289,11 +353,11 @@ void mover_jogador(MapaDirecoes teclas, Jogador *jogador) {
     }
 
     // Checando se dá pra mover
-    if (!esta_colidindo_cenario(jogador->x, y_futuro, 40)) {
+    if (!colide_no_cenario(jogador->x, y_futuro, 40)) {
         jogador->y = y_futuro;
     }
 
-    if (!esta_colidindo_cenario(x_futuro, jogador->y, 40)) {
+    if (!colide_no_cenario(x_futuro, jogador->y, 40)) {
         jogador->x = x_futuro;
     }
 
@@ -301,9 +365,15 @@ void mover_jogador(MapaDirecoes teclas, Jogador *jogador) {
                    ALLEGRO_FLIP_HORIZONTAL);
 }
 
-void gerar_bala(ALLEGRO_EVENT evento, Bala **balas, int *dest_quant,
-                Jogador *jogador, ALLEGRO_TIMER *tick_timer) {
+/*
+    Uma função cujo propósito é gerar adicionar, se possível, uma nova bala do
+   jogador na memória e atualizar o timestamp do último tiro.
 
+    A função também exporta a quantidade de balas para fora por meio do
+   argumento `dest_quant`.
+*/
+void criar_bala_jogador(Bala **balas, int *dest_quant, Jogador *jogador,
+                        ALLEGRO_TIMER *tick_timer, FolhaSprites sprites) {
     // O jogador tem que estar mirando em alguma direção
     if (!(jogador->mira.cima || jogador->mira.baixo || jogador->mira.esq ||
           jogador->mira.dir)) {
@@ -321,12 +391,8 @@ void gerar_bala(ALLEGRO_EVENT evento, Bala **balas, int *dest_quant,
         return;
     }
 
-    Bala bala_temp = {al_load_bitmap("./materiais/sprites/bala.png"),
-                      jogador->x,
-                      jogador->y,
-                      jogador->mira,
-                      true,
-                      1};
+    Bala bala_temp = {sprites.bala, jogador->x, jogador->y, jogador->mira,
+                      true};
 
     (*dest_quant)++;
     *balas = realloc(*balas, sizeof(Bala) * *dest_quant);
@@ -336,6 +402,12 @@ void gerar_bala(ALLEGRO_EVENT evento, Bala **balas, int *dest_quant,
         al_get_timer_count(tick_timer) + jogador->arma.tempo_resfriamento;
 }
 
+/*
+    Uma função cujo propósito é atualizar a posição das balas e redesenhar todo
+   tick.
+
+    TODO: Mover a parte de redesenhar para uma função dedicada;
+*/
 void mover_balas(Bala *balas, int quant_balas) {
     for (int i = 0; i < quant_balas; i++) {
         if (!balas[i].ativa) {
@@ -358,7 +430,7 @@ void mover_balas(Bala *balas, int quant_balas) {
             balas[i].x += VEL_BALA;
         }
 
-        if (esta_colidindo_cenario(balas[i].x, balas[i].y, 12)) {
+        if (colide_no_cenario(balas[i].x, balas[i].y, 12)) {
             balas[i].ativa = false;
             return;
         }
@@ -461,8 +533,9 @@ void criarInimigo(Inimigo tatus[], Inimigo formigas[], double *counts,
     }
 }
 
-void inimigosLogica(Inimigo inimigos[], int *indice, Jogador canga, double *counts,
-                    BalaInimigo formiga_bala[], ALLEGRO_BITMAP *cuspe) {
+void inimigosLogica(Inimigo inimigos[], int *indice, Jogador canga,
+                    double *counts, BalaInimigo formiga_bala[],
+                    ALLEGRO_BITMAP *cuspe) {
     const int disparo_cooldown = 2;
     int colisao;
     for (int i = 0; i < *indice; i++) {
@@ -483,10 +556,10 @@ void inimigosLogica(Inimigo inimigos[], int *indice, Jogador canga, double *coun
             if (inimigos[i].posy > canga.y) {
                 y_futuro -= inimigos[i].velocidade;
             }
-            if (!esta_colidindo_cenario(x_futuro, inimigos[i].posy, 64)) {
+            if (!colide_no_cenario(x_futuro, inimigos[i].posy, 64)) {
                 inimigos[i].posx = x_futuro;
             }
-            if (!esta_colidindo_cenario(inimigos[i].posx, y_futuro, 64)) {
+            if (!colide_no_cenario(inimigos[i].posx, y_futuro, 64)) {
                 inimigos[i].posy = y_futuro;
             }
             colisao = 24;
@@ -527,8 +600,7 @@ void inimigosLogica(Inimigo inimigos[], int *indice, Jogador canga, double *coun
                         inimigos[i].posy += inimigos[i].velocidade;
                     }
                 }
-                if (esta_colidindo_cenario(inimigos[i].posx, inimigos[i].posy,
-                                           48)) {
+                if (colide_no_cenario(inimigos[i].posx, inimigos[i].posy, 48)) {
                     inimigos[i].posx = x;
                     inimigos[i].posy = y;
                 }
@@ -599,13 +671,13 @@ void colisaoInimigos(Inimigo inimigos[], int *indice, int tamanho,
                     inimigos[i].posy += inimigos[i].velocidade;
                     inimigos[j].posy -= inimigos[j].velocidade;
                 }
-                if (esta_colidindo_cenario(inimigos[i].posx, inimigos[i].posy,
-                                           tamanhosprite)) {
+                if (colide_no_cenario(inimigos[i].posx, inimigos[i].posy,
+                                      tamanhosprite)) {
                     inimigos[i].posx = old_x;
                     inimigos[i].posy = old_y;
                 }
-                if (esta_colidindo_cenario(inimigos[j].posx, inimigos[j].posy,
-                                           tamanhosprite)) {
+                if (colide_no_cenario(inimigos[j].posx, inimigos[j].posy,
+                                      tamanhosprite)) {
                     inimigos[j].posx = old_x2;
                     inimigos[j].posy = old_y2;
                 }
@@ -644,7 +716,6 @@ void processamentoBalaInimigo(Inimigo inimigos[], int *indice, Bala balas[],
             if (!balas[j].ativa) {
                 if (inimigos[i].vida <= 0) {
                     inimigos[i].ativo = false;
-                    
                 }
                 break;
             }
@@ -678,11 +749,11 @@ void desenharInimigo(Inimigo inimigos[], int indice, int *contador_frames,
             // al_draw_bitmap_region(formigas[i].sprite, png_x, png_y, 48, 48,
             //                       formigas[i].posx - 24, formigas[i].posy -
             //                       24, flip);
-            al_draw_bitmap_region(inimigos[i].sprite, png_x, png_y,
-                      inimigos[i].tamanho_sprite, inimigos[i].tamanho_sprite,
-                      inimigos[i].posx - inimigos[i].tamanho_sprite / 2,
-                      inimigos[i].posy - inimigos[i].tamanho_sprite / 2, flip);
-
+            al_draw_bitmap_region(
+                inimigos[i].sprite, png_x, png_y, inimigos[i].tamanho_sprite,
+                inimigos[i].tamanho_sprite,
+                inimigos[i].posx - inimigos[i].tamanho_sprite / 2,
+                inimigos[i].posy - inimigos[i].tamanho_sprite / 2, flip);
 
             if (inimigos[i].comportamento == FORMIGA) {
                 for (int j = 0; j < inimigos[i].quantidade_de_ataques; j++) {
@@ -717,8 +788,7 @@ void logicaBalaFormiga(BalaInimigo formiga_bala[], int *cont_disparo) {
                 formiga_bala[i].ativa = false;
             }
         }
-        if (esta_colidindo_cenario(formiga_bala[i].posx, formiga_bala[i].posy,
-                                   12)) {
+        if (colide_no_cenario(formiga_bala[i].posx, formiga_bala[i].posy, 12)) {
             formiga_bala[i].ativa = 0;
         }
     }
@@ -734,7 +804,6 @@ void compactarBalaFormiga(BalaInimigo formiga_bala[], int *cont_disparo) {
     }
     *cont_disparo = bala_ativa;
 }
-
 
 int main() {
     // ----------
@@ -758,11 +827,23 @@ int main() {
     al_start_timer(tick_timer);
 
     // ----------
+    // Sprites
+    // ----------
+    FolhaSprites sprites = {
+        al_load_bitmap("./materiais/sprites/canga.png"),
+        al_load_bitmap("./materiais/sprites/mapa/areia.png"),
+        al_load_bitmap("./materiais/sprites/mapa/cacto.png"),
+        al_load_bitmap("./materiais/sprites/mapa/pedra.png"),
+        al_load_bitmap("./materiais/sprites/mapa/arbusto.png"),
+        al_load_bitmap("./materiais/sprites/sombra.png"),
+        al_load_bitmap("./materiais/sprites/bala.png")};
+
+    // ----------
     // Jogador
     // ----------
-    Jogador canga = {al_load_bitmap("./materiais/sprites/canga.png"),
-                     ALTURA / 2,
+    Jogador canga = {sprites.canga,
                      LARGURA / 2,
+                     ALTURA / 2,
                      {false, false, false, false},
                      {false, false, false, false},
                      {30, 0}};
@@ -793,12 +874,6 @@ int main() {
 
     int ultimo_spawn_formiga = 0;
 
-    //---------
-    // Cenário
-    //---------
-    // ALLEGRO_BITMAP *cenario =
-    //     al_load_bitmap("./materiais/sprites/background.png");
-
     // ----------
     // Loop Principal
     // ----------
@@ -814,7 +889,8 @@ int main() {
         }
 
         if (evento.type == ALLEGRO_EVENT_TIMER) {
-            gerar_bala(evento, &balas, &quant_balas, &canga, tick_timer);
+            criar_bala_jogador(&balas, &quant_balas, &canga, tick_timer,
+                               sprites);
 
             //--------
             // Inimigos
@@ -824,24 +900,31 @@ int main() {
                          sprite_tatu, &ultimo_spawn_tatu, &ultimo_spawn_formiga,
                          &indice_tatu, &indice_formiga);
 
-            inimigosLogica(homem_tatus, &indice_tatu, canga, &counts, formiga_bala, cuspe);
-            inimigosLogica(formigas, &indice_formiga, canga, &counts, formiga_bala, cuspe);
-            processamentoBalaInimigo(homem_tatus, &indice_tatu, balas, &quant_balas, 28);
-            processamentoBalaInimigo(formigas, &indice_formiga, balas, &quant_balas, 22);
+            inimigosLogica(homem_tatus, &indice_tatu, canga, &counts,
+                           formiga_bala, cuspe);
+            inimigosLogica(formigas, &indice_formiga, canga, &counts,
+                           formiga_bala, cuspe);
+            processamentoBalaInimigo(homem_tatus, &indice_tatu, balas,
+                                     &quant_balas, 28);
+            processamentoBalaInimigo(formigas, &indice_formiga, balas,
+                                     &quant_balas, 22);
 
-                // ----------
-                // Frames
-                // ----------
-                // al_draw_bitmap(cenario, 0, 0, ALLEGRO_FLIP_HORIZONTAL);
-                al_draw_filled_rectangle(0, 0, LARGURA, ALTURA,
-                                         al_map_rgb(0, 0, 0));
-            renderizar_mapa();
+            // ----------
+            // Frames
+            // ----------
+            // al_draw_bitmap(cenario, 0, 0, ALLEGRO_FLIP_HORIZONTAL);
+            al_draw_filled_rectangle(0, 0, LARGURA, ALTURA,
+                                     al_map_rgb(0, 0, 0));
+            redesenhar_mapa(sprites);
 
             mover_jogador(canga.movimento, &canga);
-                    desenharInimigo(homem_tatus, indice_tatu, &contador_frames, canga, formiga_bala);
-                    desenharInimigo(formigas, indice_formiga, &contador_frames, canga, formiga_bala);
+            desenharInimigo(homem_tatus, indice_tatu, &contador_frames, canga,
+                            formiga_bala);
+            desenharInimigo(formigas, indice_formiga, &contador_frames, canga,
+                            formiga_bala);
             mover_balas(balas, quant_balas);
-            al_draw_filled_circle(canga.x, canga.y, 5, al_map_rgb(255, 0, 0));
+            // al_draw_filled_circle(canga.x, canga.y, 5, al_map_rgb(255, 0,
+            // 0));
 
             al_flip_display();
         }
@@ -851,7 +934,6 @@ int main() {
     al_destroy_bitmap(canga.sprite);
     al_destroy_bitmap(sprite_formiga);
     al_destroy_bitmap(sprite_tatu);
-    // al_destroy_bitmap(cenario);
     al_destroy_timer(tick_timer);
     al_destroy_event_queue(fila);
     al_destroy_bitmap(balas->sprite);
