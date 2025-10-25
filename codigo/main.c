@@ -215,8 +215,8 @@ typedef struct {
     Ecomportamento comportamento;
     int tamanho_box;
     int ultimo_ataque;
-    float posx;
-    float posy;
+    int posx;
+    int posy;
     ALLEGRO_BITMAP *sprite;
     int vida;
     int dano;
@@ -687,8 +687,8 @@ void colisaoInimigos(Inimigo inimigos[], int *indice, int tamanho,
 }
 
 bool verificaColisao(Bala *bala, Inimigo *inimigo, int colisao) {
-    if (fabs(bala->x - inimigo->posx) < colisao &&
-        fabs(bala->y - inimigo->posy) < colisao) {
+    if (abs(bala->x - inimigo->posx) < colisao &&
+        abs(bala->y - inimigo->posy) < colisao) {
         return true;
     }
     return false;
@@ -752,8 +752,8 @@ void desenharInimigo(Inimigo inimigos[], int indice, int *contador_frames,
             al_draw_bitmap_region(
                 inimigos[i].sprite, png_x, png_y, inimigos[i].tamanho_sprite,
                 inimigos[i].tamanho_sprite,
-                inimigos[i].posx - inimigos[i].tamanho_sprite / 2,
-                inimigos[i].posy - inimigos[i].tamanho_sprite / 2, flip);
+                inimigos[i].posx - inimigos[i].tamanho_sprite / 2.0,
+                inimigos[i].posy - inimigos[i].tamanho_sprite / 2.0, flip);
 
             if (inimigos[i].comportamento == FORMIGA) {
                 for (int j = 0; j < inimigos[i].quantidade_de_ataques; j++) {
