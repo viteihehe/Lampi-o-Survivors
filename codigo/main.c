@@ -29,7 +29,7 @@
 
 #define MAPA_LINHAS 16
 #define MAPA_COLUNAS 20
-#define TAM_QUADRADOS 48
+#define TAM_BLOCOS 48
 
 typedef enum { CIMA, BAIXO, DIREITA, ESQUERDA } Direcoes;
 
@@ -37,53 +37,79 @@ enum EBloco {
     N, // Nada
     C, // Cacto
     P, // Pedra
+    A, // Arbusto
 };
 
 int mapa_inicial[MAPA_LINHAS][MAPA_COLUNAS] = {
-    {C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C},
-    {C, N, N, N, P, N, N, N, N, N, N, N, N, N, N, N, P, P, P, C},
-    {C, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, P, C},
-    {C, N, C, N, N, N, N, N, C, N, N, N, N, N, N, N, N, N, N, C},
-    {C, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, C},
-    {C, N, N, N, N, N, N, N, N, N, N, N, N, N, N, C, N, N, N, C},
-    {C, N, N, C, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, C},
-    {C, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, P, N, C},
-    {C, N, N, N, N, N, N, N, N, N, N, N, C, N, N, N, N, N, N, C},
-    {C, N, N, N, C, N, N, N, N, N, N, N, N, N, N, N, N, N, N, C},
-    {C, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, C},
-    {C, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, C, N, N, C},
-    {C, N, P, P, N, N, N, N, N, N, N, P, N, N, N, N, N, N, N, C},
-    {C, N, P, N, N, N, P, N, N, N, N, P, P, N, N, N, N, N, N, C},
-    {C, N, N, N, N, N, N, N, N, N, P, P, P, N, N, N, N, N, N, C},
-    {C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C},
+    {A, A, A, A, A, A, A, A, A, A, A, A, A, A, A, A, P, P, P, P},
+    {A, N, N, N, P, P, N, N, N, N, N, N, N, N, N, N, P, P, P, P},
+    {A, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, P, P},
+    {A, N, C, N, N, N, N, N, C, N, N, N, N, N, N, N, N, N, N, A},
+    {A, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, A},
+    {A, N, N, N, N, N, N, N, N, N, N, N, N, N, N, C, N, N, N, A},
+    {A, N, N, C, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, A},
+    {A, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, P, N, A},
+    {A, N, N, N, N, N, N, N, N, N, N, N, C, N, N, N, N, N, N, A},
+    {A, N, N, N, C, N, N, N, N, N, N, N, N, N, N, N, N, N, N, A},
+    {A, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, A},
+    {A, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, C, N, N, A},
+    {A, N, P, P, N, N, N, N, N, N, N, P, N, N, N, N, N, N, N, A},
+    {A, N, P, N, N, N, P, N, N, N, N, P, P, N, N, N, N, N, N, A},
+    {A, N, N, N, N, N, N, N, N, N, P, P, P, N, N, N, N, N, N, A},
+    {A, A, A, A, A, A, A, A, A, A, P, P, P, P, A, A, A, A, A, A},
 };
+
+typedef struct {
+    ALLEGRO_BITMAP *canga;
+
+    ALLEGRO_BITMAP *areia;
+    ALLEGRO_BITMAP *cacto;
+    ALLEGRO_BITMAP *pedra;
+    ALLEGRO_BITMAP *arbusto;
+
+    ALLEGRO_BITMAP *sombra;
+} FolhaSprites;
 
 /*
     Uma função cujo único propósito é redesenhar o cenário.
 */
-void redesenhar_mapa() {
+void redesenhar_mapa(FolhaSprites sprites) {
     for (int lin = 0; lin < MAPA_LINHAS; lin++) {
         for (int col = 0; col < MAPA_COLUNAS; col++) {
-            int x = col * TAM_QUADRADOS;
-            int y = lin * TAM_QUADRADOS;
+            int x = col * TAM_BLOCOS;
+            int y = lin * TAM_BLOCOS;
+
+            al_draw_scaled_bitmap(sprites.areia, 0, 0, 16, 16, x, y, 48, 48, 0);
 
             switch (mapa_inicial[lin][col]) {
             case N:
-                al_draw_filled_rectangle(x, y, x + TAM_QUADRADOS,
-                                         y + TAM_QUADRADOS,
-                                         al_map_rgb(246, 215, 176));
+                // Esse case só serve pra o bloco vazio não cair no default
                 break;
 
             case C:
-                al_draw_filled_rectangle(x, y, x + TAM_QUADRADOS,
-                                         y + TAM_QUADRADOS,
-                                         al_map_rgb(70, 106, 57));
+                al_draw_scaled_bitmap(sprites.sombra, 0, 0, 16, 16, x, y, 48,
+                                      48, 0);
+                al_draw_scaled_bitmap(sprites.cacto, 0, 0, 16, 16, x, y, 48, 48,
+                                      0);
                 break;
 
             case P:
-                al_draw_filled_rectangle(x, y, x + TAM_QUADRADOS,
-                                         y + TAM_QUADRADOS,
-                                         al_map_rgb(100, 100, 100));
+                al_draw_scaled_bitmap(sprites.sombra, 0, 0, 16, 16, x, y, 48,
+                                      48, 0);
+                al_draw_scaled_bitmap(sprites.pedra, 0, 0, 16, 16, x, y, 48, 48,
+                                      0);
+                break;
+
+            case A:
+                al_draw_scaled_bitmap(sprites.sombra, 0, 0, 16, 16, x, y, 48,
+                                      48, 0);
+                al_draw_scaled_bitmap(sprites.arbusto, 0, 0, 16, 16, x, y, 48,
+                                      48, 0);
+                break;
+
+            default:
+                al_draw_filled_rectangle(x, y, x + TAM_BLOCOS, y + TAM_BLOCOS,
+                                         al_map_rgb(199, 36, 147));
                 break;
             }
         }
@@ -103,33 +129,37 @@ int colide_no_cenario(int x, int y, int tam_box) {
     int cel_y;
 
     // Superior Esquerdo
-    cel_x = (x - tam_box) / TAM_QUADRADOS;
-    cel_y = (y - tam_box) / TAM_QUADRADOS;
-    al_draw_filled_circle(x - tam_box, y - tam_box, 3, al_map_rgb(0, 255, 0));
+    cel_x = (x - tam_box) / TAM_BLOCOS;
+    cel_y = (y - tam_box) / TAM_BLOCOS;
+    // al_draw_filled_circle(x - tam_box, y - tam_box, 3, al_map_rgb(0, 255,
+    // 0));
     if (mapa_inicial[cel_y][cel_x] >= 1) {
         return 1;
     }
 
     // Superior Direito
-    cel_x = (x + tam_box) / TAM_QUADRADOS;
-    cel_y = (y - tam_box) / TAM_QUADRADOS;
-    al_draw_filled_circle(x + tam_box, y - tam_box, 3, al_map_rgb(0, 255, 0));
+    cel_x = (x + tam_box) / TAM_BLOCOS;
+    cel_y = (y - tam_box) / TAM_BLOCOS;
+    // al_draw_filled_circle(x + tam_box, y - tam_box, 3, al_map_rgb(0, 255,
+    // 0));
     if (mapa_inicial[cel_y][cel_x] >= 1) {
         return 1;
     }
 
     // Inferior Esquerdo
-    cel_x = (x - tam_box) / TAM_QUADRADOS;
-    cel_y = (y + tam_box) / TAM_QUADRADOS;
-    al_draw_filled_circle(x - tam_box, y + tam_box, 3, al_map_rgb(0, 255, 0));
+    cel_x = (x - tam_box) / TAM_BLOCOS;
+    cel_y = (y + tam_box) / TAM_BLOCOS;
+    // al_draw_filled_circle(x - tam_box, y + tam_box, 3, al_map_rgb(0, 255,
+    // 0));
     if (mapa_inicial[cel_y][cel_x] >= 1) {
         return 1;
     }
 
     // Inferior Direito
-    cel_x = (x + tam_box) / TAM_QUADRADOS;
-    cel_y = (y + tam_box) / TAM_QUADRADOS;
-    al_draw_filled_circle(x + tam_box, y + tam_box, 3, al_map_rgb(0, 255, 0));
+    cel_x = (x + tam_box) / TAM_BLOCOS;
+    cel_y = (y + tam_box) / TAM_BLOCOS;
+    // al_draw_filled_circle(x + tam_box, y + tam_box, 3, al_map_rgb(0, 255,
+    // 0));
     if (mapa_inicial[cel_y][cel_x] >= 1) {
         return 1;
     }
@@ -716,9 +746,20 @@ int main() {
     al_start_timer(tick_timer);
 
     // ----------
+    // Sprites
+    // ----------
+    FolhaSprites sprites = {
+        al_load_bitmap("./materiais/sprites/canga.png"),
+        al_load_bitmap("./materiais/sprites/mapa/areia.png"),
+        al_load_bitmap("./materiais/sprites/mapa/cacto.png"),
+        al_load_bitmap("./materiais/sprites/mapa/pedra.png"),
+        al_load_bitmap("./materiais/sprites/mapa/arbusto.png"),
+        al_load_bitmap("./materiais/sprites/sombra.png")};
+
+    // ----------
     // Jogador
     // ----------
-    Jogador canga = {al_load_bitmap("./materiais/sprites/canga2.png"),
+    Jogador canga = {sprites.canga,
                      LARGURA / 2,
                      ALTURA / 2,
                      {false, false, false, false},
@@ -763,12 +804,6 @@ int main() {
     const int total_frames_formiga = 2;
     const int total_frames_tatu = 2;
     int frame_atual_tatu = 0;
-
-    //---------
-    // Cenário
-    //---------
-    ALLEGRO_BITMAP *cenario =
-        al_load_bitmap("./materiais/sprites/background.png");
 
     // ----------
     // Loop Principal
@@ -820,7 +855,7 @@ int main() {
             // al_draw_bitmap(cenario, 0, 0, ALLEGRO_FLIP_HORIZONTAL);
             al_draw_filled_rectangle(0, 0, LARGURA, ALTURA,
                                      al_map_rgb(0, 0, 0));
-            redesenhar_mapa();
+            redesenhar_mapa(sprites);
 
             mover_jogador(canga.movimento, &canga);
             desenhoTatu(homem_tatus, frame_atual_tatu, indice_tatu, canga);
@@ -828,7 +863,8 @@ int main() {
                            formiga_bala, cont_disparo);
 
             mover_balas(balas, quant_balas);
-            al_draw_filled_circle(canga.x, canga.y, 5, al_map_rgb(255, 0, 0));
+            // al_draw_filled_circle(canga.x, canga.y, 5, al_map_rgb(255, 0,
+            // 0));
 
             al_flip_display();
         }
@@ -838,7 +874,6 @@ int main() {
     al_destroy_bitmap(canga.sprite);
     al_destroy_bitmap(sprite_formiga);
     al_destroy_bitmap(sprite_tatu);
-    al_destroy_bitmap(cenario);
     al_destroy_timer(tick_timer);
     al_destroy_event_queue(fila);
 
