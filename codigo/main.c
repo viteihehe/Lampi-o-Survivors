@@ -181,11 +181,6 @@ typedef struct {
 } MapaDirecoes;
 
 typedef struct {
-    int tempo_resfriamento;
-    long tempo_ultimo_disparo;
-} Arma;
-
-typedef struct {
     ALLEGRO_BITMAP *sprite;
     int x;
     int y;
@@ -196,11 +191,15 @@ typedef struct {
 
 typedef struct {
     ALLEGRO_BITMAP *sprite;
+
     int x;
     int y;
+
     MapaDirecoes movimento;
     MapaDirecoes mira;
-    Arma arma;
+
+    int cooldown_arma;
+    long tempo_ultimo_disparo;
 } Jogador;
 
 typedef struct {
@@ -380,7 +379,7 @@ void criar_bala_jogador(Bala **balas, int *dest_quant, Jogador *jogador,
     }
 
     // Arma não pode estar resfriando
-    if (al_get_timer_count(tick_timer) < jogador->arma.tempo_ultimo_disparo) {
+    if (al_get_timer_count(tick_timer) < jogador->tempo_ultimo_disparo) {
         return;
     }
 
@@ -391,8 +390,8 @@ void criar_bala_jogador(Bala **balas, int *dest_quant, Jogador *jogador,
     *balas = realloc(*balas, sizeof(Bala) * *dest_quant);
     (*balas)[*dest_quant - 1] = bala_temp;
 
-    jogador->arma.tempo_ultimo_disparo =
-        al_get_timer_count(tick_timer) + jogador->arma.tempo_resfriamento;
+    jogador->tempo_ultimo_disparo =
+        al_get_timer_count(tick_timer) + jogador->cooldown_arma;
 }
 
 /*
@@ -834,15 +833,14 @@ int main() {
     // ----------
     // Jogador
     // ----------
-    Jogador canga = {sprites.canga,
-                     LARGURA / 2,
-                     ALTURA / 2,
-                     {false, false, false, false},
-                     {false, false, false, false},
-                     {30, 0}};
+    Jogador canga = {};
+    canga.x = LARGURA / 2;
+    canga.y = ALTURA / 2;
+    canga.sprite = sprites.canga;
+    canga.cooldown_arma = 30;
 
-    int quant_balas = 0;
     Bala *balas = NULL;
+    int quant_balas = 0;
 
     //---------
     // Inimigos
