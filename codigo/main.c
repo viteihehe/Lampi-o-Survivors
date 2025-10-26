@@ -45,7 +45,7 @@ enum EBloco {
     A, // Arbusto
 };
 
-int mapa_inicial[MAPA_LINHAS][MAPA_COLUNAS] = {
+int mapa01_blocos[MAPA_LINHAS][MAPA_COLUNAS] = {
     {A, A, A, A, A, A, A, A, A, A, A, A, A, A, A, A, P, P, P, P},
     {A, N, N, N, P, P, N, N, N, N, N, N, N, N, N, N, P, P, P, P},
     {A, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, P, P},
@@ -64,6 +64,31 @@ int mapa_inicial[MAPA_LINHAS][MAPA_COLUNAS] = {
     {A, A, A, A, A, A, A, A, A, A, P, P, P, P, A, A, A, A, A, A},
 };
 
+enum EDecoracao {
+    DN, // Nada
+    DG, // Grama
+    DP, // Pedrinhas
+};
+
+int mapa01_decos[MAPA_LINHAS][MAPA_COLUNAS] = {
+    {},
+    {},
+    {DN, DN, DN, DN, DN, DN, DN, DN, DN, DN, DN, DN, DN, DG, DG},
+    {DN, DN, DN, DP, DN, DN, DN, DN, DN, DN, DN, DN, DN, DN, DG},
+    {DN, DN, DN, DP},
+    {DN, DN, DN, DN, DP},
+    {DN, DN, DN, DN, DN, DN, DN, DN, DN, DG},
+    {DN, DN, DN, DN, DN, DN, DN, DN, DG, DG, DG},
+    {DN, DN, DN, DN, DN, DN, DN, DG, DG, DG, DG},
+    {DN, DN, DN, DN, DN, DN, DN, DN, DG, DG},
+    {DN, DN, DN, DN, DN, DN, DN, DN, DN, DG},
+    {},
+    {DN, DN, DN, DN, DN, DN, DN, DN, DN, DN, DN, DN, DN, DN, DN, DN, DN},
+    {DN, DG, DN, DN, DN, DN, DN, DN, DN, DN, DN, DN, DN, DN, DN, DP, DP},
+    {DN, DG, DG, DN, DN, DN, DN, DN, DN, DN, DN, DN, DN, DN, DN, DN, DP, DP},
+    {},
+};
+
 typedef struct {
     ALLEGRO_BITMAP *canga;
 
@@ -74,6 +99,9 @@ typedef struct {
 
     ALLEGRO_BITMAP *sombra;
     ALLEGRO_BITMAP *bala;
+    ALLEGRO_BITMAP *grama;
+    ALLEGRO_BITMAP *pedrinhas;
+
 } FolhaSprites;
 
 /*
@@ -87,11 +115,10 @@ void redesenhar_mapa(FolhaSprites sprites) {
 
             al_draw_scaled_bitmap(sprites.areia, 0, 0, 16, 16, x, y, 48, 48, 0);
 
-            switch (mapa_inicial[lin][col]) {
-            case N:
-                // Esse case só serve pra o bloco vazio não cair no default
-                break;
-
+            // ----------
+            // Blocos
+            // ----------
+            switch (mapa01_blocos[lin][col]) {
             case C:
                 al_draw_scaled_bitmap(sprites.sombra, 0, 0, 16, 16, x, y, 48,
                                       48, 0);
@@ -112,10 +139,20 @@ void redesenhar_mapa(FolhaSprites sprites) {
                 al_draw_scaled_bitmap(sprites.arbusto, 0, 0, 16, 16, x, y, 48,
                                       48, 0);
                 break;
+            }
 
-            default:
-                al_draw_filled_rectangle(x, y, x + TAM_BLOCOS, y + TAM_BLOCOS,
-                                         al_map_rgb(199, 36, 147));
+            // ----------
+            // Decorações
+            // ----------
+            switch (mapa01_decos[lin][col]) {
+            case DG:
+                al_draw_scaled_bitmap(sprites.grama, 0, 0, 16, 16, x, y, 48, 48,
+                                      0);
+                break;
+
+            case DP:
+                al_draw_scaled_bitmap(sprites.pedrinhas, 0, 0, 16, 16, x, y, 48,
+                                      48, 0);
                 break;
             }
         }
@@ -139,7 +176,7 @@ int colide_no_cenario(int x, int y, int tam_box) {
     cel_y = (y - tam_box) / TAM_BLOCOS;
     // al_draw_filled_circle(x - tam_box, y - tam_box, 3, al_map_rgb(0, 255,
     // 0));
-    if (mapa_inicial[cel_y][cel_x] >= 1) {
+    if (mapa01_blocos[cel_y][cel_x] >= 1) {
         return 1;
     }
 
@@ -148,7 +185,7 @@ int colide_no_cenario(int x, int y, int tam_box) {
     cel_y = (y - tam_box) / TAM_BLOCOS;
     // al_draw_filled_circle(x + tam_box, y - tam_box, 3, al_map_rgb(0, 255,
     // 0));
-    if (mapa_inicial[cel_y][cel_x] >= 1) {
+    if (mapa01_blocos[cel_y][cel_x] >= 1) {
         return 1;
     }
 
@@ -157,7 +194,7 @@ int colide_no_cenario(int x, int y, int tam_box) {
     cel_y = (y + tam_box) / TAM_BLOCOS;
     // al_draw_filled_circle(x - tam_box, y + tam_box, 3, al_map_rgb(0, 255,
     // 0));
-    if (mapa_inicial[cel_y][cel_x] >= 1) {
+    if (mapa01_blocos[cel_y][cel_x] >= 1) {
         return 1;
     }
 
@@ -166,7 +203,7 @@ int colide_no_cenario(int x, int y, int tam_box) {
     cel_y = (y + tam_box) / TAM_BLOCOS;
     // al_draw_filled_circle(x + tam_box, y + tam_box, 3, al_map_rgb(0, 255,
     // 0));
-    if (mapa_inicial[cel_y][cel_x] >= 1) {
+    if (mapa01_blocos[cel_y][cel_x] >= 1) {
         return 1;
     }
 
@@ -828,7 +865,9 @@ int main() {
         al_load_bitmap("./materiais/sprites/mapa/pedra.png"),
         al_load_bitmap("./materiais/sprites/mapa/arbusto.png"),
         al_load_bitmap("./materiais/sprites/sombra.png"),
-        al_load_bitmap("./materiais/sprites/bala.png")};
+        al_load_bitmap("./materiais/sprites/bala.png"),
+        al_load_bitmap("./materiais/sprites/mapa/grama.png"),
+        al_load_bitmap("./materiais/sprites/mapa/pedrinhas.png")};
 
     // ----------
     // Jogador
