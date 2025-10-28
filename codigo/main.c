@@ -518,17 +518,20 @@ void criarInimigo(Inimigo tatus[], Inimigo formigas[], double *counts,
             tatus[*indice_tatu].posx = 80;
             tatus[*indice_tatu].posy = ALTURA / 2;
             break;
+
         case 1:
-            tatus[*indice_tatu].posx = LARGURA - 80;
+            tatus[*indice_tatu].posx = LARGURA - 200;
             tatus[*indice_tatu].posy = ALTURA / 2;
             break;
+
         case 2:
             tatus[*indice_tatu].posx = LARGURA / 2;
             tatus[*indice_tatu].posy = ALTURA - 660;
             break;
+
         case 3:
             tatus[*indice_tatu].posx = LARGURA / 2;
-            tatus[*indice_tatu].posy = ALTURA - 80;
+            tatus[*indice_tatu].posy = ALTURA - 160;
             break;
 
         default:
@@ -557,7 +560,7 @@ void criarInimigo(Inimigo tatus[], Inimigo formigas[], double *counts,
             formigas[*indice_formiga].posy = ALTURA / 2;
             break;
         case 1:
-            formigas[*indice_formiga].posx = LARGURA - 80;
+            formigas[*indice_formiga].posx = LARGURA - 200;
             formigas[*indice_formiga].posy = ALTURA / 2;
             break;
         case 2:
@@ -566,7 +569,7 @@ void criarInimigo(Inimigo tatus[], Inimigo formigas[], double *counts,
             break;
         case 3:
             formigas[*indice_formiga].posx = LARGURA / 2;
-            formigas[*indice_formiga].posy = ALTURA - 120;
+            formigas[*indice_formiga].posy = ALTURA - 160;
             break;
 
         default:
@@ -1064,11 +1067,11 @@ int main() {
                                          al_map_rgba(0, 0, 0, 240));
 
                 al_draw_text(fonte, al_map_rgb(255, 255, 255), LARGURA / 6.0,
-                             (ALTURA / 2.0) - 30, 0, "SE LASCOU!");
+                             (ALTURA / 2.0) - 30, 0, "SE LASCÔ!");
 
                 al_draw_text(fonte, al_map_rgb(150, 150, 150), LARGURA / 6.0,
                              (ALTURA / 2.0) + 10, 0,
-                             "Pressione [ESPAÇO] para reiniciar.");
+                             "Pressione [ESPAÇO] para recomeçar.");
             }
             al_flip_display();
         }
