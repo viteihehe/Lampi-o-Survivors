@@ -1110,7 +1110,7 @@ int main() {
         
         capturar_movimento(evento, &globs.canga.movimento);
         capturar_mira(evento, &globs.canga.mira);
-        waves(&globs, &contador_waves, &mensager_timer);
+       
         
 
         if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
@@ -1131,7 +1131,7 @@ int main() {
                 
                 al_set_audio_stream_playing(jogo_sons.musica_de_fundo, true);
                 al_set_audio_stream_playing(jogo_sons.musica_derrota, false);
-               
+                waves(&globs, &contador_waves, &mensager_timer);
 
                 //--------
                 // Inimigos
