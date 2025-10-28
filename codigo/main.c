@@ -927,6 +927,8 @@ typedef struct {
     double coldoown_tatu;
     double coldoown_formiga;
     double ultima_wave;
+    int contador_wave;
+    int delay_mensagem;
     Som sons;
 } EstadoGlobal;
 
@@ -965,6 +967,8 @@ EstadoGlobal gerar_estado(FolhaSprites sprites, Som sons) {
         .coldoown_tatu = 4,
         .coldoown_formiga = 6,
         .ultima_wave = 0,
+        .contador_wave = 1,
+        .delay_mensagem = 120,
     };
 
     return globs;
@@ -982,36 +986,48 @@ void reiniciar_estado(EstadoGlobal *antigo) {
     *antigo = gerar_estado(antigo->sprites, antigo->sons);
 }
 
-void waves(EstadoGlobal* globs, int* texto, int* mensager_time) {
-        double tempo_atual = al_get_time();
+void reiniciar_inimigos(EstadoGlobal* globs) {
+    free(globs->homem_tatus);
+    free(globs->formigas);
 
-        if(fabs(tempo_atual - globs->ultima_wave) >= 15) {
-            (*texto)++;
-            reiniciar_estado(globs);
-            globs->indice_formiga = 0;
-            globs->indice_tatu = 0;
+    globs->indice_formiga = 0;
+    globs->indice_tatu = 0;
+
+    globs->homem_tatus = NULL;
+    globs->formigas = NULL;
+}
+
+
+void waves(EstadoGlobal* globs) {
+        double tempo_atual = al_get_time();
+    // Coldoown por wave
+        if(fabs(tempo_atual - globs->ultima_wave) >= 5) {
+            globs->contador_wave++;
+            reiniciar_inimigos(globs);
             if(globs->coldoown_tatu > 0) {
-                globs->coldoown_tatu -= 0.25*(*texto);
+                globs->coldoown_tatu -= 0.25*(globs->contador_wave);
             }
             if(globs->coldoown_formiga > 0) {
-                globs->coldoown_formiga -= 0.15*(*texto); 
+                globs->coldoown_formiga -= 0.15*(globs->contador_wave); 
             }
-            *mensager_time = 240;
+            globs->delay_mensagem = 120;
             globs->ultima_wave = tempo_atual;
         }
     
     }     
 
-void resete_game(EstadoGlobal* globs, int* contador_waves, int* mensager_time) {
+    //Adição para reiniciar as funções atualizadas da wave
+void reiniciar_game(EstadoGlobal* globs) {
     reiniciar_estado(globs);
-    *contador_waves = 1;
-    *mensager_time = 240;
+    globs->contador_wave = 1;
+    globs->delay_mensagem = 120;
     globs->ultima_wave = al_get_time();
     globs->indice_formiga = 0;
     globs->indice_tatu = 0;
     globs->coldoown_tatu = 4;
     globs->coldoown_formiga = 6;
 }
+
 
 int main() {
     // ----------
@@ -1071,6 +1087,7 @@ int main() {
         al_load_audio_stream("./materiais/sons/derrota_16bit.wav", 4, 2048),
         al_load_sample("./materiais/sons/hitini_16bit.wav"),
     };
+    //Inicialização das duas musicas, os outros efeitos de som estão expalhados pelo código
      al_attach_audio_stream_to_mixer(jogo_sons.musica_de_fundo, al_get_default_mixer());
      al_set_audio_stream_gain(jogo_sons.musica_de_fundo, 0.6);
      al_set_audio_stream_playmode(jogo_sons.musica_de_fundo, ALLEGRO_PLAYMODE_LOOP);
@@ -1099,8 +1116,6 @@ int main() {
     // Inimigos
     // ---------
     int contador_frames = 0;
-    int contador_waves = 1;
-    int mensager_timer = 240;
     // ----------
     // Loop Principal
     // ----------
@@ -1119,7 +1134,8 @@ int main() {
 
         if (!globs.canga.vivo && evento.type == ALLEGRO_EVENT_KEY_DOWN &&
             evento.keyboard.keycode == ALLEGRO_KEY_SPACE) {
-            resete_game(&globs, &contador_waves, &mensager_timer);
+            //reiniciar_game(&globs, &contador_waves, &mensager_timer);
+            reiniciar_game(&globs);
             continue;
         }
         
@@ -1131,7 +1147,7 @@ int main() {
                 
                 al_set_audio_stream_playing(jogo_sons.musica_de_fundo, true);
                 al_set_audio_stream_playing(jogo_sons.musica_derrota, false);
-                waves(&globs, &contador_waves, &mensager_timer);
+                waves(&globs);
 
                 //--------
                 // Inimigos
@@ -1171,9 +1187,9 @@ int main() {
                 desenharInimigo(globs.formigas, globs.indice_formiga,
                                 &contador_frames, globs.canga);
                 mover_balas(globs.balas, globs.quant_balas);
-                if(mensager_timer > 0) {
-                    al_draw_textf(fonte, al_map_rgb(255, 255, 255), LARGURA/2, ALTURA/2-200, ALLEGRO_ALIGN_CENTER, "WAVE %d", contador_waves);
-                    mensager_timer--;
+                if(globs.delay_mensagem > 0) {
+                    al_draw_textf(fonte, al_map_rgb(255, 255, 255), LARGURA/2, ALTURA/2-200, ALLEGRO_ALIGN_CENTER, "WAVE %d", globs.contador_wave);
+                    globs.delay_mensagem--;
                 }
                 // al_draw_filled_circle(canga.x, canga.y, 5, al_map_rgb(255, 0,
                 // 0));
