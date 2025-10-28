@@ -497,7 +497,7 @@ void frames(int *contador_frames, Inimigo *inimigo) {
     }
 }
 
-void criarInimigo(Inimigo tatus[], Inimigo formigas[], double *counts,
+void criarInimigo(Inimigo **tatus, Inimigo **formigas, double *counts,
                   ALLEGRO_BITMAP *sprite_formiga, ALLEGRO_BITMAP *sprite_tatu,
                   double *ultimo_spawn_tatu, double *ultimo_spawn_formiga,
                   int *indice_tatu, int *indice_formiga) {
@@ -509,29 +509,31 @@ void criarInimigo(Inimigo tatus[], Inimigo formigas[], double *counts,
         Inimigo tatu_temp = {TATU, 28,   0, 0, 0,    sprite_tatu, 3, 1,
                              1,    true, 2, 0, NULL, 0,           64};
 
-        tatus[*indice_tatu] = tatu_temp;
+        (*indice_tatu)++;
+        *tatus = realloc(*tatus, sizeof(Inimigo) * (*indice_tatu + 1));
+        (*tatus)[*indice_tatu - 1] = tatu_temp;
 
         int spawn = rand() % 4;
 
         switch (spawn) {
         case 0:
-            tatus[*indice_tatu].posx = 80;
-            tatus[*indice_tatu].posy = ALTURA / 2;
+            (*tatus)[*indice_tatu - 1].posx = 80;
+            (*tatus)[*indice_tatu - 1].posy = ALTURA / 2;
             break;
 
         case 1:
-            tatus[*indice_tatu].posx = LARGURA - 200;
-            tatus[*indice_tatu].posy = ALTURA / 2;
+            (*tatus)[*indice_tatu - 1].posx = LARGURA - 200;
+            (*tatus)[*indice_tatu - 1].posy = ALTURA / 2;
             break;
 
         case 2:
-            tatus[*indice_tatu].posx = LARGURA / 2;
-            tatus[*indice_tatu].posy = ALTURA - 660;
+            (*tatus)[*indice_tatu - 1].posx = LARGURA / 2;
+            (*tatus)[*indice_tatu - 1].posy = ALTURA - 660;
             break;
 
         case 3:
-            tatus[*indice_tatu].posx = LARGURA / 2;
-            tatus[*indice_tatu].posy = ALTURA - 160;
+            (*tatus)[*indice_tatu - 1].posx = LARGURA / 2;
+            (*tatus)[*indice_tatu - 1].posy = ALTURA - 160;
             break;
 
         default:
@@ -539,7 +541,6 @@ void criarInimigo(Inimigo tatus[], Inimigo formigas[], double *counts,
         }
 
         *ultimo_spawn_tatu = *counts;
-        (*indice_tatu)++;
     }
     if (*counts - *ultimo_spawn_formiga >= cooldoown_formiga &&
         *indice_formiga < 100) {
@@ -550,26 +551,28 @@ void criarInimigo(Inimigo tatus[], Inimigo formigas[], double *counts,
         temp_formiga.balas = NULL;
         temp_formiga.quantidade_de_ataques = 0;
 
-        formigas[*indice_formiga] = temp_formiga;
+        (*indice_formiga)++;
+        *formigas = realloc(*formigas, sizeof(Inimigo) * (*indice_formiga));
+        (*formigas)[*indice_formiga - 1] = temp_formiga;
 
         int spawn = rand() % 4;
 
         switch (spawn) {
         case 0:
-            formigas[*indice_formiga].posx = 80;
-            formigas[*indice_formiga].posy = ALTURA / 2;
+            (*formigas)[*indice_formiga - 1].posx = 80;
+            (*formigas)[*indice_formiga - 1].posy = ALTURA / 2;
             break;
         case 1:
-            formigas[*indice_formiga].posx = LARGURA - 200;
-            formigas[*indice_formiga].posy = ALTURA / 2;
+            (*formigas)[*indice_formiga - 1].posx = LARGURA - 200;
+            (*formigas)[*indice_formiga - 1].posy = ALTURA / 2;
             break;
         case 2:
-            formigas[*indice_formiga].posx = LARGURA / 2;
-            formigas[*indice_formiga].posy = ALTURA - 660;
+            (*formigas)[*indice_formiga - 1].posx = LARGURA / 2;
+            (*formigas)[*indice_formiga - 1].posy = ALTURA - 660;
             break;
         case 3:
-            formigas[*indice_formiga].posx = LARGURA / 2;
-            formigas[*indice_formiga].posy = ALTURA - 160;
+            (*formigas)[*indice_formiga - 1].posx = LARGURA / 2;
+            (*formigas)[*indice_formiga - 1].posy = ALTURA - 160;
             break;
 
         default:
@@ -577,7 +580,6 @@ void criarInimigo(Inimigo tatus[], Inimigo formigas[], double *counts,
         }
 
         *ultimo_spawn_formiga = *counts;
-        (*indice_formiga)++;
     }
 }
 
@@ -688,6 +690,11 @@ void inimigosLogica(Inimigo inimigos[], int *indice, Jogador canga,
                 logicaBalaFormiga(&inimigos[i]);
             }
         }
+    }
+
+    // Isso tá conseguindo chegar como NULL aqui. Não deveria
+    if (inimigos == NULL) {
+        return;
     }
 
     colisaoInimigos(inimigos, indice, colisao, inimigos->tamanho_sprite);
@@ -912,8 +919,8 @@ EstadoGlobal gerar_estado(FolhaSprites sprites) {
            reiniciar_estado().
         */
         .balas = NULL,
-        .homem_tatus = malloc(50 * sizeof(Inimigo)),
-        .formigas = malloc(50 * sizeof(Inimigo)),
+        .homem_tatus = NULL,
+        .formigas = NULL,
     };
 
     return globs;
@@ -1024,7 +1031,7 @@ int main() {
                 // Inimigos
                 //--------
                 globs.counts = al_get_time();
-                criarInimigo(globs.homem_tatus, globs.formigas, &globs.counts,
+                criarInimigo(&globs.homem_tatus, &globs.formigas, &globs.counts,
                              globs.sprites.formiga, globs.sprites.tatu,
                              &globs.ultimo_spawn_tatu,
                              &globs.ultimo_spawn_formiga, &globs.indice_tatu,
