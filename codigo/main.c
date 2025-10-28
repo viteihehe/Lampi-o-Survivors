@@ -1016,70 +1016,71 @@ int main() {
             break;
         }
 
-        if (!globs.canga.vivo && evento.type == ALLEGRO_EVENT_KEY_DOWN &&
-            evento.keyboard.keycode == ALLEGRO_KEY_SPACE) {
-            reiniciar_estado(&globs);
+        if (!globs.canga.vivo) {
+            redesenhar_mapa(sprites);
+
+            al_draw_filled_rectangle(0, 0, LARGURA, ALTURA,
+                                     al_map_rgba(25, 0, 0, 150));
+            al_draw_filled_rectangle(0, (ALTURA / 2.0) - 80, LARGURA,
+                                     (ALTURA / 2.0) + 80, al_map_rgb(0, 0, 0));
+
+            al_draw_text(fonte, al_map_rgb(255, 255, 255), LARGURA / 2.0,
+                         (ALTURA / 2.0) - 40, ALLEGRO_ALIGN_CENTER,
+                         "SE LASCÔ!");
+            al_draw_text(fonte, al_map_rgb(150, 150, 150), LARGURA / 2.0,
+                         (ALTURA / 2.0) + 10, ALLEGRO_ALIGN_CENTER,
+                         "Pressione [ESPAÇO] para recomeçar.");
+
+            if (evento.type == ALLEGRO_EVENT_KEY_DOWN &&
+                evento.keyboard.keycode == ALLEGRO_KEY_SPACE) {
+                reiniciar_estado(&globs);
+            }
+
+            al_flip_display();
             continue;
         }
 
         if (evento.type == ALLEGRO_EVENT_TIMER) {
-            if (globs.canga.vivo) {
-                criar_bala_jogador(&globs.balas, &globs.quant_balas,
-                                   &globs.canga, tick_timer, globs.sprites);
+            criar_bala_jogador(&globs.balas, &globs.quant_balas, &globs.canga,
+                               tick_timer, globs.sprites);
 
-                //--------
-                // Inimigos
-                //--------
-                globs.counts = al_get_time();
-                criarInimigo(&globs.homem_tatus, &globs.formigas, &globs.counts,
-                             globs.sprites.formiga, globs.sprites.tatu,
-                             &globs.ultimo_spawn_tatu,
-                             &globs.ultimo_spawn_formiga, &globs.indice_tatu,
-                             &globs.indice_formiga);
+            //--------
+            // Inimigos
+            //--------
+            globs.counts = al_get_time();
+            criarInimigo(&globs.homem_tatus, &globs.formigas, &globs.counts,
+                         globs.sprites.formiga, globs.sprites.tatu,
+                         &globs.ultimo_spawn_tatu, &globs.ultimo_spawn_formiga,
+                         &globs.indice_tatu, &globs.indice_formiga);
 
-                inimigosLogica(globs.homem_tatus, &globs.indice_tatu,
-                               globs.canga, &globs.counts, globs.sprites.cuspe);
-                inimigosLogica(globs.formigas, &globs.indice_formiga,
-                               globs.canga, &globs.counts, globs.sprites.cuspe);
-                processamentoBala(globs.homem_tatus, &globs.indice_tatu,
-                                  globs.balas, &globs.quant_balas, 28);
-                processamentoBala(globs.formigas, &globs.indice_formiga,
-                                  globs.balas, &globs.quant_balas, 22);
-                danoJogador(globs.homem_tatus, &globs.canga, globs.indice_tatu,
-                            globs.counts);
-                danoJogador(globs.formigas, &globs.canga, globs.indice_formiga,
-                            globs.counts);
-                // ----------
-                // Frames
-                // ----------
-                // al_draw_bitmap(cenario, 0, 0, ALLEGRO_FLIP_HORIZONTAL);
-                al_draw_filled_rectangle(0, 0, LARGURA, ALTURA,
-                                         al_map_rgb(0, 0, 0));
-                redesenhar_mapa(globs.sprites);
+            inimigosLogica(globs.homem_tatus, &globs.indice_tatu, globs.canga,
+                           &globs.counts, globs.sprites.cuspe);
+            inimigosLogica(globs.formigas, &globs.indice_formiga, globs.canga,
+                           &globs.counts, globs.sprites.cuspe);
+            processamentoBala(globs.homem_tatus, &globs.indice_tatu,
+                              globs.balas, &globs.quant_balas, 28);
+            processamentoBala(globs.formigas, &globs.indice_formiga,
+                              globs.balas, &globs.quant_balas, 22);
+            danoJogador(globs.homem_tatus, &globs.canga, globs.indice_tatu,
+                        globs.counts);
+            danoJogador(globs.formigas, &globs.canga, globs.indice_formiga,
+                        globs.counts);
+            // ----------
+            // Frames
+            // ----------
+            // al_draw_bitmap(cenario, 0, 0, ALLEGRO_FLIP_HORIZONTAL);
+            al_draw_filled_rectangle(0, 0, LARGURA, ALTURA,
+                                     al_map_rgb(0, 0, 0));
+            redesenhar_mapa(globs.sprites);
 
-                mover_jogador(globs.canga.movimento, &globs.canga);
-                desenharInimigo(globs.homem_tatus, globs.indice_tatu,
-                                &contador_frames, globs.canga);
-                desenharInimigo(globs.formigas, globs.indice_formiga,
-                                &contador_frames, globs.canga);
-                mover_balas(globs.balas, globs.quant_balas);
-                // al_draw_filled_circle(canga.x, canga.y, 5, al_map_rgb(255, 0,
-                // 0));
-
-            } else {
-                // Temporário
-                redesenhar_mapa(sprites);
-                al_draw_filled_rectangle(0, (ALTURA / 2.0) - 80, LARGURA,
-                                         (ALTURA / 2.0) + 80,
-                                         al_map_rgba(0, 0, 0, 240));
-
-                al_draw_text(fonte, al_map_rgb(255, 255, 255), LARGURA / 6.0,
-                             (ALTURA / 2.0) - 30, 0, "SE LASCÔ!");
-
-                al_draw_text(fonte, al_map_rgb(150, 150, 150), LARGURA / 6.0,
-                             (ALTURA / 2.0) + 10, 0,
-                             "Pressione [ESPAÇO] para recomeçar.");
-            }
+            mover_jogador(globs.canga.movimento, &globs.canga);
+            desenharInimigo(globs.homem_tatus, globs.indice_tatu,
+                            &contador_frames, globs.canga);
+            desenharInimigo(globs.formigas, globs.indice_formiga,
+                            &contador_frames, globs.canga);
+            mover_balas(globs.balas, globs.quant_balas);
+            // al_draw_filled_circle(canga.x, canga.y, 5, al_map_rgb(255, 0,
+            // 0));
             al_flip_display();
         }
     }
