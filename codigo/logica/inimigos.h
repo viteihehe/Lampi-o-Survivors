@@ -1,0 +1,57 @@
+#pragma once
+
+#include "jogador.h"
+#include <allegro5/bitmap.h>
+
+typedef enum { CIMA, BAIXO, DIREITA, ESQUERDA } Direcoes;
+
+typedef enum {
+    TATU,
+    FORMIGA,
+} EComportamento;
+
+typedef struct {
+    EComportamento comportamento;
+    int tamanho_box;
+    int ultimo_ataque;
+    int posx;
+    int posy;
+    ALLEGRO_BITMAP *sprite;
+    int vida;
+    int dano;
+    float velocidade;
+    bool ativo;
+    int total_frames;
+    int frame_atual;
+    Bala *balas;
+    int quantidade_de_ataques;
+    int tamanho_sprite;
+} Inimigo;
+
+void criarInimigo(Inimigo **tatus, Inimigo **formigas, double *counts,
+                  ALLEGRO_BITMAP *sprite_formiga, ALLEGRO_BITMAP *sprite_tatu,
+                  double *ultimo_spawn_tatu, double *ultimo_spawn_formiga,
+                  int *indice_tatu, int *indice_formiga, double *cooldoown_tatu,
+                  double *cooldoown_formiga);
+
+void inimigosLogica(Inimigo inimigos[], int *indice, Jogador canga,
+                    double *counts, ALLEGRO_BITMAP *cuspe);
+
+void colisaoInimigos(Inimigo inimigos[], int *indice, int tamanho,
+                     int tamanhosprite);
+
+void colisaoBala(Bala *bala_atual, Inimigo *inimigo_atual, int colisao,
+                 Som som);
+
+void processamentoBala(Inimigo inimigos[], int *indice, Bala balas[],
+                       int *max_balas, int colisao, Jogador *canga, Som *sons);
+
+void reajusteInimigos(Inimigo inimigos[], int *indice);
+
+void desenharInimigo(Inimigo inimigos[], int indice, int *contador_frames,
+                     Jogador canga);
+
+void logicaBalaFormiga(Inimigo *inimigo);
+
+void danoJogador(Inimigo inimigos[], Jogador *canga, int indice, double counts,
+                 Som som);
