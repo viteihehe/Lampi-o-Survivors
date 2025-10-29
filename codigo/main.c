@@ -1,4 +1,4 @@
-#include "comum/constantes.h"
+#include "constantes.h"
 #include "logica/cenario.h"
 #include "logica/inimigos.h"
 #include "logica/jogador.h"

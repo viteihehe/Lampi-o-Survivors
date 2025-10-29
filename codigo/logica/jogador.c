@@ -1,5 +1,5 @@
 #include "jogador.h"
-#include "../comum/constantes.h"
+#include "../constantes.h"
 #include "cenario.h"
 #include <allegro5/allegro_primitives.h>
 

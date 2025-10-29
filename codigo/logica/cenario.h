@@ -4,7 +4,7 @@
 #define MAPA_COLUNAS 20
 #define TAM_BLOCOS 48
 
-#include "../comum/midia.h"
+#include "../midia.h"
 
 enum EBloco {
     N, // Nada

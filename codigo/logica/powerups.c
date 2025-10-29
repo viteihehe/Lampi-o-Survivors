@@ -1,5 +1,5 @@
 #include "powerups.h"
-#include "../comum/constantes.h"
+#include "../constantes.h"
 #include "../utils.h"
 #include "jogador.h"
 #include <allegro5/allegro_primitives.h>
