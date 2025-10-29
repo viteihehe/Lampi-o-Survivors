@@ -1,6 +1,6 @@
 #pragma once
 
-#include "midia.h"
+#include "../comum/midia.h"
 #include <allegro5/bitmap.h>
 #include <allegro5/events.h>
 

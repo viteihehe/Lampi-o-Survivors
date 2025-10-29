@@ -1,7 +1,7 @@
 #include "powerups.h"
-#include "consts.h"
+#include "../comum/constantes.h"
+#include "../utils.h"
 #include "jogador.h"
-#include "utils.h"
 #include <allegro5/allegro_primitives.h>
 
 void desenhar_powerups(EPowerUps powers[3], ALLEGRO_FONT *fonte) {

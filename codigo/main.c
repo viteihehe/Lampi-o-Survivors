@@ -1,7 +1,7 @@
-#include "cenario.h"
-#include "consts.h"
-#include "jogador.h"
-#include "powerups.h"
+#include "comum/constantes.h"
+#include "logica/cenario.h"
+#include "logica/jogador.h"
+#include "logica/powerups.h"
 #include <allegro5/allegro_acodec.h>
 #include <allegro5/allegro_audio.h>
 #include <allegro5/allegro_font.h>

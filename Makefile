@@ -1,5 +1,4 @@
-# ARQUIVO_MAIN := ./codigo/main.c
-ARQUIVO_MAIN := ${shell find ./codigo/*.c}
+CODIGOS := ${shell find -name *.c}
 
 SAIDA := jogo.out
 ALLEGRO := \
@@ -9,7 +8,7 @@ ALLEGRO := \
 	-lallegro_dialog \
 	-lallegro_ttf \
 	-lallegro_image \
- 	-lallegro_color \
+	-lallegro_color \
 	-lallegro_memfile \
 	-lallegro_acodec \
 	-lallegro_primitives \
@@ -17,7 +16,7 @@ ALLEGRO := \
 FLAGS := ${ALLEGRO} -g -Wall
 
 
-linux: ${ARQUIVO_MAIN}
-	gcc ${ARQUIVO_MAIN} ${FLAGS} -o jogo.out
+linux: ${CODIGOS}
+	gcc ${CODIGOS} ${FLAGS} -o jogo.out
 
 	@./${SAIDA}
