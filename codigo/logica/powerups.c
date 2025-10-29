@@ -4,6 +4,9 @@
 #include "jogador.h"
 #include <allegro5/allegro_primitives.h>
 
+/*
+    Renderiza o menu de selecionar powerup.
+*/
 void desenhar_powerups(EPowerUps powers[3], ALLEGRO_FONT *fonte) {
     int x = LARGURA / 2;
     int y = ALTURA / 2;

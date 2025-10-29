@@ -29,23 +29,30 @@
 
 typedef struct {
     FolhaSprites sprites;
+    Som sons;
+
     Jogador canga;
+    bool powerup_pendente;
+
     Bala *balas;
     int quant_balas;
-    int indice_tatu;
-    int indice_formiga;
+
     Inimigo *homem_tatus;
-    Inimigo *formigas;
-    double ultimo_spawn_formiga;
+    int indice_tatu;
     double ultimo_spawn_tatu;
-    double counts;
-    bool powerup_pendente;
     double coldoown_tatu;
+
+    Inimigo *formigas;
+    int indice_formiga;
+    double ultimo_spawn_formiga;
     double coldoown_formiga;
+
+    double counts;
+    int contador_frames;
+
     double ultima_wave;
     int contador_wave;
     int delay_mensagem;
-    Som sons;
 } EstadoGlobal;
 
 /*
@@ -135,18 +142,6 @@ void waves(EstadoGlobal *globs) {
     }
 }
 
-// Adição para reiniciar as funções atualizadas da wave
-void reiniciar_game(EstadoGlobal *globs) {
-    reiniciar_estado(globs);
-    globs->contador_wave = 1;
-    globs->delay_mensagem = 120;
-    globs->ultima_wave = al_get_time();
-    globs->indice_formiga = 0;
-    globs->indice_tatu = 0;
-    globs->coldoown_tatu = 4;
-    globs->coldoown_formiga = 6;
-}
-
 int main() {
     // ----------
     // Inicialização
@@ -166,9 +161,11 @@ int main() {
     ALLEGRO_EVENT_QUEUE *fila = al_create_event_queue();
     al_register_event_source(fila, al_get_keyboard_event_source());
     al_register_event_source(fila, al_get_display_event_source(tela));
+
     ALLEGRO_FONT *fonte =
         al_load_ttf_font("./materiais/fontes/FiftiesMovies.ttf", 32, 0);
-    ALLEGRO_FONT *fonte_power =
+
+    ALLEGRO_FONT *fonte_powers =
         al_load_ttf_font("./materiais/fontes/FiftiesMovies.ttf", 22, 0);
 
     ALLEGRO_TIMER *tick_timer = al_create_timer(1.0 / FPS);
@@ -195,7 +192,8 @@ int main() {
         .grama = al_load_bitmap("./materiais/sprites/mapa/grama.png"),
         .pedrinhas = al_load_bitmap("./materiais/sprites/mapa/pedrinhas.png"),
     };
-    //---------
+
+    // ---------
     // Sons
     // ----------
     Som jogo_sons = {
@@ -206,8 +204,7 @@ int main() {
         al_load_audio_stream("./materiais/sons/derrota_16bit.wav", 4, 2048),
         al_load_sample("./materiais/sons/hitini_16bit.wav"),
     };
-    // Inicialização das duas musicas, os outros efeitos de som estão expalhados
-    // pelo código
+
     al_attach_audio_stream_to_mixer(jogo_sons.musica_de_fundo,
                                     al_get_default_mixer());
     al_set_audio_stream_gain(jogo_sons.musica_de_fundo, 0.6);
@@ -235,14 +232,10 @@ int main() {
     al_set_display_icon(tela, globs.sprites.cacto);
     al_set_window_title(tela, "Lampião Survivors");
 
-    // ---------
-    // Inimigos
-    // ---------
-    int contador_frames = 0;
-
     // ----------
     // Loop Principal
     // ----------
+
     // TODO: Deixar aleatório quando tiver mais do que 3
     EPowerUps powers_temp[3] = {AUMENTO_DANO, AUMENTO_VDA, AUMENTO_VDM};
 
@@ -275,7 +268,7 @@ int main() {
                          "Pressione [ESPAÇO] para recomeçar.");
 
             if (evento.keyboard.keycode == ALLEGRO_KEY_SPACE) {
-                reiniciar_game(&globs);
+                reiniciar_estado(&globs);
             }
 
             al_flip_display();
@@ -284,7 +277,7 @@ int main() {
 
         if (globs.canga.xp >= 20) {
             redesenhar_mapa(sprites);
-            desenhar_powerups(powers_temp, fonte_power);
+            desenhar_powerups(powers_temp, fonte_powers);
 
             if (evento.type == ALLEGRO_EVENT_KEY_DOWN) {
                 switch (evento.keyboard.keycode) {
@@ -319,9 +312,9 @@ int main() {
             criar_bala_jogador(&globs.balas, &globs.quant_balas, &globs.canga,
                                tick_timer, globs.sprites, globs.sons);
 
-            //--------
+            // --------
             // Inimigos
-            //--------
+            // --------
             globs.counts = al_get_time();
             criarInimigo(&globs.homem_tatus, &globs.formigas, &globs.counts,
                          globs.sprites.formiga, globs.sprites.tatu,
@@ -345,18 +338,17 @@ int main() {
                         globs.counts, globs.sons);
 
             // ----------
-            // Frames
+            // Redesenho
             // ----------
-            // al_draw_bitmap(cenario, 0, 0, ALLEGRO_FLIP_HORIZONTAL);
             al_draw_filled_rectangle(0, 0, LARGURA, ALTURA,
                                      al_map_rgb(0, 0, 0));
             redesenhar_mapa(globs.sprites);
 
             mover_jogador(globs.canga.movimento, &globs.canga);
             desenharInimigo(globs.homem_tatus, globs.indice_tatu,
-                            &contador_frames, globs.canga);
+                            &globs.contador_frames, globs.canga);
             desenharInimigo(globs.formigas, globs.indice_formiga,
-                            &contador_frames, globs.canga);
+                            &globs.contador_frames, globs.canga);
             mover_balas(globs.balas, globs.quant_balas);
             if (globs.delay_mensagem > 0) {
                 al_draw_textf(fonte, al_map_rgb(255, 255, 255), LARGURA / 2.0,
@@ -364,26 +356,16 @@ int main() {
                               "WAVE %d", globs.contador_wave);
                 globs.delay_mensagem--;
             }
-            // al_draw_filled_circle(canga.x, canga.y, 5, al_map_rgb(255, 0,
-            // 0));
-
             al_flip_display();
         }
     }
 
     al_destroy_display(tela);
-    // al_destroy_bitmap(canga.sprite);
-    // al_destroy_bitmap(sprite_formiga);
-    // al_destroy_bitmap(sprite_tatu);
     al_destroy_timer(tick_timer);
     al_destroy_event_queue(fila);
-    // al_destroy_bitmap(balas->sprite);
-    // al_destroy_bitmap(cuspe);
     al_destroy_font(fonte);
     al_destroy_audio_stream(jogo_sons.musica_de_fundo);
     al_destroy_audio_stream(jogo_sons.musica_derrota);
-    // free(formigas);
-    // free(homem_tatus);
 
     return 0;
 }
