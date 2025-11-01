@@ -26,6 +26,7 @@ typedef struct {
     Bala *balas;
     int quantidade_de_ataques;
     int tamanho_sprite;
+    int vida_max;
 } Inimigo;
 
 void criarInimigo(Inimigo **tatus, Inimigo **formigas, double *counts,
@@ -55,3 +56,5 @@ void logicaBalaFormiga(Inimigo *inimigo);
 
 void danoJogador(Inimigo inimigos[], Jogador *canga, int indice, double counts,
                  Som som);
+
+void desenhar_vidas(Inimigo *inimigos, int quant_inimigos);

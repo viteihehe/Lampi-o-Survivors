@@ -275,7 +275,7 @@ int main() {
             continue;
         }
 
-        if (globs.canga.xp >= 1) {
+        if (globs.canga.xp >= 15) {
             redesenhar_mapa(sprites);
             desenhar_powerups(powers_temp, fonte_powers);
 
@@ -340,10 +340,7 @@ int main() {
             // ----------
             // Redesenho
             // ----------
-            al_draw_filled_rectangle(0, 0, LARGURA, ALTURA,
-                                     al_map_rgb(0, 0, 0));
-            redesenhar_mapa(globs.sprites);
-
+            redesenhar_mapa(sprites);
             mover_jogador(globs.canga.movimento, &globs.canga);
             desenharInimigo(globs.homem_tatus, globs.indice_tatu,
                             &globs.contador_frames, globs.canga);
@@ -356,6 +353,8 @@ int main() {
                               "WAVE %d", globs.contador_wave);
                 globs.delay_mensagem--;
             }
+            desenhar_vidas(globs.homem_tatus, globs.indice_tatu);
+            desenhar_vidas(globs.formigas, globs.indice_formiga);
             al_flip_display();
         }
     }
