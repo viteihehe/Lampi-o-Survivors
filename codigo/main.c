@@ -171,8 +171,8 @@ void menu(ALLEGRO_BITMAP *menu, ALLEGRO_FONT *fonte, ALLEGRO_FONT *fonte50,
     desenhar_caixa_texto(mini, al_map_rgb(0, 0, 0), centro_x2 + 50, 520, larg,
                          altu2, fonte);
 
-    al_draw_text(fonte50, al_map_rgb(255, 255, 255), centro_x, ALTURA / 2 - 150,
-                 0, "CANGA SURVIVORS");
+    al_draw_text(fonte50, al_map_rgb(255, 255, 255), centro_x,
+                 ALTURA / 2.0 - 150, 0, "CANGA SURVIVORS");
 
     switch (*caso) {
     case 0:
