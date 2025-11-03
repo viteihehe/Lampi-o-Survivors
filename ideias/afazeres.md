@@ -8,6 +8,7 @@
 - [X] Corrigir os inimigos atravessando o cenário
 - [x] Balancear as evoluções
 - [X] Ajustar a vida dos inimigos para números grandes
+- [ ] Implementar os sprites do personagem
 
 
 
