@@ -23,120 +23,135 @@ void frames(Inimigo *inimigo) {
 /*
     Função de criar todos os inimigos de maneira compacta
 */
-void criarInimigo(Inimigo **tatus, Inimigo **formigas, double *counts,
-                  ALLEGRO_BITMAP *sprite_formiga, ALLEGRO_BITMAP *sprite_tatu,
-                  double *ultimo_spawn_tatu, double *ultimo_spawn_formiga,
-                  int *indice_tatu, int *indice_formiga, double *cooldoown_tatu,
-                  double *cooldoown_formiga, int tipo, int* contador_total) {
+void criarInimigo(
+  Inimigo **tatus,
+  Inimigo **formigas,
+  double *counts,
+  ALLEGRO_BITMAP *sprite_formiga,
+  ALLEGRO_BITMAP *sprite_tatu,
+  double *ultimo_spawn_tatu,
+  double *ultimo_spawn_formiga,
+  int *indice_tatu,
+  int *indice_formiga,
+  double *cooldoown_tatu,
+  double *cooldoown_formiga,
+  int tipo,
+  int *contador_total
+) {
 
-    if(tipo == 0) {
-        if (*counts - *ultimo_spawn_tatu >= *cooldoown_tatu && *indice_tatu < 50) {
-        Inimigo tatu_temp = {
-            .comportamento = TATU,
-            .tamanho_box = 20,
+    if (tipo == 0) {
+        if (*counts - *ultimo_spawn_tatu >= *cooldoown_tatu &&
+            *indice_tatu < 50) {
+            Inimigo tatu_temp = {
+              .comportamento = TATU,
+              .tamanho_box = 20,
 
-            .sprite = sprite_tatu,
-            .tamanho_sprite = 64,
-            .total_frames = 2,
+              .sprite = sprite_tatu,
+              .tamanho_sprite = 64,
+              .total_frames = 2,
 
-            .vida = 120,
-            .vida_max = 120,
-            .dano = 1,
-            .velocidade = 1,
-            .ativo = true,
-            .contador_frames = 0,
-        };
+              .vida = 120,
+              .vida_max = 120,
+              .dano = 1,
+              .velocidade = 1,
+              .ativo = true,
+              .contador_frames = 0,
+            };
 
-        (*indice_tatu)++;
-        *tatus = realloc(*tatus, sizeof(Inimigo) * (*indice_tatu + 1));
-        (*tatus)[*indice_tatu - 1] = tatu_temp;
+            (*indice_tatu)++;
+            *tatus = realloc(*tatus, sizeof(Inimigo) * (*indice_tatu + 1));
+            (*tatus)[*indice_tatu - 1] = tatu_temp;
 
-        int spawn = rand() % 4;
+            int spawn = rand() % 4;
 
-        switch (spawn) {
-        case 0:
-            (*tatus)[*indice_tatu - 1].posx = 80;
-            (*tatus)[*indice_tatu - 1].posy = ALTURA / 2;
-            break;
+            switch (spawn) {
+            case 0:
+                (*tatus)[*indice_tatu - 1].posx = 80;
+                (*tatus)[*indice_tatu - 1].posy = ALTURA / 2;
+                break;
 
-        case 1:
-            (*tatus)[*indice_tatu - 1].posx = LARGURA - 200;
-            (*tatus)[*indice_tatu - 1].posy = ALTURA / 2;
-            break;
+            case 1:
+                (*tatus)[*indice_tatu - 1].posx = LARGURA - 200;
+                (*tatus)[*indice_tatu - 1].posy = ALTURA / 2;
+                break;
 
-        case 2:
-            (*tatus)[*indice_tatu - 1].posx = LARGURA / 2;
-            (*tatus)[*indice_tatu - 1].posy = ALTURA - 660;
-            break;
+            case 2:
+                (*tatus)[*indice_tatu - 1].posx = LARGURA / 2;
+                (*tatus)[*indice_tatu - 1].posy = ALTURA - 660;
+                break;
 
-        case 3:
-            (*tatus)[*indice_tatu - 1].posx = LARGURA / 2;
-            (*tatus)[*indice_tatu - 1].posy = ALTURA - 160;
-            break;
+            case 3:
+                (*tatus)[*indice_tatu - 1].posx = LARGURA / 2;
+                (*tatus)[*indice_tatu - 1].posy = ALTURA - 160;
+                break;
 
-        default:
-            break;
-        }
+            default:
+                break;
+            }
 
-        *ultimo_spawn_tatu = *counts;
-        (*contador_total)++;
+            *ultimo_spawn_tatu = *counts;
+            (*contador_total)++;
         }
     }
-    if(tipo == 1) {
+    if (tipo == 1) {
         if (*counts - *ultimo_spawn_formiga >= *cooldoown_formiga &&
-        *indice_formiga < 100) {
+            *indice_formiga < 100) {
 
-        Inimigo temp_formiga = {
-            .comportamento = FORMIGA,
-            .tamanho_box = 20,
+            Inimigo temp_formiga = {
+              .comportamento = FORMIGA,
+              .tamanho_box = 20,
 
-            .sprite = sprite_formiga,
-            .tamanho_sprite = 48,
-            .total_frames = 2,
+              .sprite = sprite_formiga,
+              .tamanho_sprite = 48,
+              .total_frames = 2,
 
-            .vida = 65,
-            .vida_max = 65,
-            .dano = 1,
-            .velocidade = 0.3,
-            .ativo = true,
-        };
+              .vida = 65,
+              .vida_max = 65,
+              .dano = 1,
+              .velocidade = 0.3,
+              .ativo = true,
+            };
 
-        (*indice_formiga)++;
-        *formigas = realloc(*formigas, sizeof(Inimigo) * (*indice_formiga));
-        (*formigas)[*indice_formiga - 1] = temp_formiga;
+            (*indice_formiga)++;
+            *formigas = realloc(*formigas, sizeof(Inimigo) * (*indice_formiga));
+            (*formigas)[*indice_formiga - 1] = temp_formiga;
 
-        int spawn = rand() % 4;
+            int spawn = rand() % 4;
 
-        switch (spawn) {
-        case 0:
-            (*formigas)[*indice_formiga - 1].posx = 80;
-            (*formigas)[*indice_formiga - 1].posy = ALTURA / 2;
-            break;
-        case 1:
-            (*formigas)[*indice_formiga - 1].posx = LARGURA - 200;
-            (*formigas)[*indice_formiga - 1].posy = ALTURA / 2;
-            break;
-        case 2:
-            (*formigas)[*indice_formiga - 1].posx = LARGURA / 2;
-            (*formigas)[*indice_formiga - 1].posy = ALTURA - 660;
-            break;
-        case 3:
-            (*formigas)[*indice_formiga - 1].posx = LARGURA / 2;
-            (*formigas)[*indice_formiga - 1].posy = ALTURA - 160;
-            break;
+            switch (spawn) {
+            case 0:
+                (*formigas)[*indice_formiga - 1].posx = 80;
+                (*formigas)[*indice_formiga - 1].posy = ALTURA / 2;
+                break;
+            case 1:
+                (*formigas)[*indice_formiga - 1].posx = LARGURA - 200;
+                (*formigas)[*indice_formiga - 1].posy = ALTURA / 2;
+                break;
+            case 2:
+                (*formigas)[*indice_formiga - 1].posx = LARGURA / 2;
+                (*formigas)[*indice_formiga - 1].posy = ALTURA - 660;
+                break;
+            case 3:
+                (*formigas)[*indice_formiga - 1].posx = LARGURA / 2;
+                (*formigas)[*indice_formiga - 1].posy = ALTURA - 160;
+                break;
 
-        default:
-            break;
+            default:
+                break;
+            }
+            (*contador_total)++;
+            *ultimo_spawn_formiga = *counts;
         }
-        (*contador_total)++;
-        *ultimo_spawn_formiga = *counts;
     }
-    }
-    
 }
 
-void inimigosLogica(Inimigo inimigos[], int *indice, Jogador canga,
-                    double *counts, ALLEGRO_BITMAP *cuspe) {
+void inimigosLogica(
+  Inimigo inimigos[],
+  int *indice,
+  Jogador canga,
+  double *counts,
+  ALLEGRO_BITMAP *cuspe
+) {
     const int disparo_cooldown = 2;
     int colisao = 0;
     /*
@@ -222,31 +237,34 @@ void inimigosLogica(Inimigo inimigos[], int *indice, Jogador canga,
                 if (*counts - inimigos[i].ultimo_ataque >= disparo_cooldown &&
                     inimigos[i].quantidade_de_ataques < 2000) {
 
-                    Bala tempBala = {cuspe,
-                                     (int)(inimigos[i].posx),
-                                     (int)(inimigos[i].posy),
-                                     {false, false, false, false},
-                                     true,
-                                     1};
+                    Bala tempBala = {
+                      cuspe,
+                      (int)(inimigos[i].posx),
+                      (int)(inimigos[i].posy),
+                      {false, false, false, false},
+                      true,
+                      1
+                    };
 
                     inimigos[i].balas = realloc(
-                        inimigos[i].balas,
-                        sizeof(Bala) * (inimigos[i].quantidade_de_ataques + 1));
+                      inimigos[i].balas,
+                      sizeof(Bala) * (inimigos[i].quantidade_de_ataques + 1)
+                    );
 
                     inimigos[i].balas[inimigos[i].quantidade_de_ataques] =
-                        tempBala;
+                      tempBala;
 
                     Bala *bala_formiga =
-                        &inimigos[i].balas[inimigos[i].quantidade_de_ataques];
+                      &inimigos[i].balas[inimigos[i].quantidade_de_ataques];
 
                     if (canga.x < inimigos[i].posx - 48) {
                         bala_formiga->direcoes.esq = true;
-                    }else if (canga.x > inimigos[i].posx + 48) {
+                    } else if (canga.x > inimigos[i].posx + 48) {
                         bala_formiga->direcoes.dir = true;
                     }
                     if (canga.y > inimigos[i].posy - 48) {
                         bala_formiga->direcoes.baixo = true;
-                    }else if (canga.y < inimigos[i].posy + 48) {
+                    } else if (canga.y < inimigos[i].posy + 48) {
                         bala_formiga->direcoes.cima = true;
                     }
                     inimigos[i].ultimo_ataque = *counts;
@@ -265,8 +283,9 @@ void inimigosLogica(Inimigo inimigos[], int *indice, Jogador canga,
     colisaoInimigos(inimigos, indice, colisao, inimigos->tamanho_sprite);
 }
 
-void colisaoInimigos(Inimigo inimigos[], int *indice, int tamanho,
-                     int tamanhosprite) {
+void colisaoInimigos(
+  Inimigo inimigos[], int *indice, int tamanho, int tamanhosprite
+) {
     for (int i = 0; i < *indice; i++) {
         if (!inimigos[i].ativo)
             continue;
@@ -301,8 +320,9 @@ void colisaoInimigos(Inimigo inimigos[], int *indice, int tamanho,
     }
 }
 
-void colisaoBala(Bala *bala_atual, Inimigo *inimigo_atual, int colisao,
-                 Som som) {
+void colisaoBala(
+  Bala *bala_atual, Inimigo *inimigo_atual, int colisao, Som som
+) {
     if (bala_atual->ativa && inimigo_atual->ativo) {
         if (abs(bala_atual->x - inimigo_atual->posx) < colisao &&
             abs(bala_atual->y - inimigo_atual->posy) < colisao) {
@@ -313,8 +333,16 @@ void colisaoBala(Bala *bala_atual, Inimigo *inimigo_atual, int colisao,
     }
 }
 
-void processamentoBala(Inimigo inimigos[], int *indice, Bala balas[],
-                       int *max_balas, int colisao, Jogador *canga, Som *sons, int *contador_morte) {
+void processamentoBala(
+  Inimigo inimigos[],
+  int *indice,
+  Bala balas[],
+  int *max_balas,
+  int colisao,
+  Jogador *canga,
+  Som *sons,
+  int *contador_morte
+) {
     for (int i = 0; i < *indice; i++) {
         if (!inimigos[i].ativo)
             continue;
@@ -327,8 +355,9 @@ void processamentoBala(Inimigo inimigos[], int *indice, Bala balas[],
                 if (inimigos[i].vida <= 0) {
                     inimigos[i].ativo = false;
                     (*contador_morte)++;
-                    al_play_sample(sons->morte_inimigos, 0.5, 0, 1,
-                                   ALLEGRO_PLAYMODE_ONCE, 0);
+                    al_play_sample(
+                      sons->morte_inimigos, 0.5, 0, 1, ALLEGRO_PLAYMODE_ONCE, 0
+                    );
                     canga->xp += 1;
                 }
                 break;
@@ -362,10 +391,15 @@ void desenharInimigo(Inimigo inimigos[], int indice, Jogador canga) {
             }
 
             al_draw_bitmap_region(
-                inimigos[i].sprite, png_x, png_y, inimigos[i].tamanho_sprite,
-                inimigos[i].tamanho_sprite,
-                inimigos[i].posx - inimigos[i].tamanho_sprite / 2.0,
-                inimigos[i].posy - inimigos[i].tamanho_sprite / 2.0, flip);
+              inimigos[i].sprite,
+              png_x,
+              png_y,
+              inimigos[i].tamanho_sprite,
+              inimigos[i].tamanho_sprite,
+              inimigos[i].posx - inimigos[i].tamanho_sprite / 2.0,
+              inimigos[i].posy - inimigos[i].tamanho_sprite / 2.0,
+              flip
+            );
 
             if (inimigos[i].balas != NULL) {
                 Bala *formiga_bala = inimigos[i].balas;
@@ -373,9 +407,12 @@ void desenharInimigo(Inimigo inimigos[], int indice, Jogador canga) {
                     for (int j = 0; j < inimigos[i].quantidade_de_ataques;
                          j++) {
                         if (formiga_bala[j].ativa) {
-                            al_draw_bitmap(formiga_bala[j].sprite,
-                                           formiga_bala[j].x - 8,
-                                           formiga_bala[j].y - 8, 0);
+                            al_draw_bitmap(
+                              formiga_bala[j].sprite,
+                              formiga_bala[j].x - 8,
+                              formiga_bala[j].y - 8,
+                              0
+                            );
                         }
                     }
                 }
@@ -421,14 +458,15 @@ void logicaBalaFormiga(Inimigo *inimigo) {
             inimigo->balas[i].ativa = 0;
         }
         if (inimigo->balas[i].x < 0 || inimigo->balas[i].x > LARGURA ||
-        inimigo->balas[i].y < 0 || inimigo->balas[i].y > ALTURA) {
-        inimigo->balas[i].ativa = false;
-}
+            inimigo->balas[i].y < 0 || inimigo->balas[i].y > ALTURA) {
+            inimigo->balas[i].ativa = false;
+        }
     }
 }
 
-void danoJogador(Inimigo inimigos[], Jogador *canga, int indice, double counts,
-                 Som som) {
+void danoJogador(
+  Inimigo inimigos[], Jogador *canga, int indice, double counts, Som som
+) {
     for (int i = 0; i < indice; i++) {
         if (!inimigos[i].ativo)
             continue;
@@ -472,17 +510,23 @@ void desenhar_vidas(Inimigo *inimigos, int quant_inimigos) {
     for (int i = 0; i < quant_inimigos; i++) {
         int desvio = inimigos[i].tamanho_sprite / 2;
 
-        al_draw_filled_rectangle(inimigos[i].posx - desvio,
-                                 inimigos[i].posy - 45,
-                                 inimigos[i].posx + desvio,
-                                 inimigos[i].posy - 40, al_map_rgb(0, 0, 0));
+        al_draw_filled_rectangle(
+          inimigos[i].posx - desvio,
+          inimigos[i].posy - 45,
+          inimigos[i].posx + desvio,
+          inimigos[i].posy - 40,
+          al_map_rgb(0, 0, 0)
+        );
 
         float proporcao_vida = (float)inimigos[i].vida / inimigos[i].vida_max;
 
         al_draw_filled_rectangle(
-            inimigos[i].posx - desvio, inimigos[i].posy - 45,
-            inimigos[i].posx - desvio +
-                (inimigos[i].tamanho_sprite * proporcao_vida),
-            inimigos[i].posy - 40, al_map_rgb(255, 0, 0));
+          inimigos[i].posx - desvio,
+          inimigos[i].posy - 45,
+          inimigos[i].posx - desvio +
+            (inimigos[i].tamanho_sprite * proporcao_vida),
+          inimigos[i].posy - 40,
+          al_map_rgb(255, 0, 0)
+        );
     }
 };

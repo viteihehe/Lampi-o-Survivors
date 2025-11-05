@@ -1,3 +1,8 @@
 BasedOnStyle: LLVM
 IndentWidth: 4
 ColumnLimit: 80
+
+AlignAfterOpenBracket: BlockIndent
+BinPackArguments: false
+BinPackParameters: OnePerLine
+ContinuationIndentWidth: 2

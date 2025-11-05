@@ -129,12 +129,14 @@ void mover_jogador(MapaDirecoes teclas, Jogador *jogador) {
         jogador->x = x_futuro;
     }
 
-    al_draw_bitmap(jogador->sprite, jogador->x - 32, jogador->y - 32,
-                   ALLEGRO_FLIP_HORIZONTAL);
+    al_draw_bitmap(
+      jogador->sprite, jogador->x - 32, jogador->y - 32, ALLEGRO_FLIP_HORIZONTAL
+    );
     int temp = -((jogador->vida * 15) - 5) / 2;
     for (int x = 0; x < jogador->vida; x++) {
-        al_draw_filled_circle(jogador->x + temp, jogador->y - 40, 5,
-                              al_map_rgb(255, 0, 0));
+        al_draw_filled_circle(
+          jogador->x + temp, jogador->y - 40, 5, al_map_rgb(255, 0, 0)
+        );
         temp += 15;
     }
 }
@@ -146,9 +148,14 @@ void mover_jogador(MapaDirecoes teclas, Jogador *jogador) {
     A função também exporta a quantidade de balas para fora por meio do
    argumento `dest_quant`.
 */
-void criar_bala_jogador(Bala **balas, int *dest_quant, Jogador *jogador,
-                        ALLEGRO_TIMER *tick_timer, FolhaSprites sprites,
-                        Som som) {
+void criar_bala_jogador(
+  Bala **balas,
+  int *dest_quant,
+  Jogador *jogador,
+  ALLEGRO_TIMER *tick_timer,
+  FolhaSprites sprites,
+  Som som
+) {
     // O jogador tem que estar mirando em alguma direção
     if (!(jogador->mira.cima || jogador->mira.baixo || jogador->mira.esq ||
           jogador->mira.dir)) {
@@ -166,15 +173,16 @@ void criar_bala_jogador(Bala **balas, int *dest_quant, Jogador *jogador,
         return;
     }
 
-    Bala bala_temp = {sprites.bala,  jogador->x, jogador->y,
-                      jogador->mira, true,       jogador->dano};
+    Bala bala_temp = {
+      sprites.bala, jogador->x, jogador->y, jogador->mira, true, jogador->dano
+    };
 
     (*dest_quant)++;
     *balas = realloc(*balas, sizeof(Bala) * *dest_quant);
     (*balas)[*dest_quant - 1] = bala_temp;
 
     jogador->tempo_ultimo_disparo =
-        al_get_timer_count(tick_timer) + jogador->cooldown_arma;
+      al_get_timer_count(tick_timer) + jogador->cooldown_arma;
     al_play_sample(som.disparo, 1.5, 0, 1, ALLEGRO_PLAYMODE_ONCE, 0);
 }
 
@@ -211,7 +219,11 @@ void mover_balas(Bala *balas, int quant_balas) {
             return;
         }
 
-        al_draw_bitmap(balas[i].sprite, balas[i].x - 8, balas[i].y - 8,
-                       ALLEGRO_FLIP_HORIZONTAL);
+        al_draw_bitmap(
+          balas[i].sprite,
+          balas[i].x - 8,
+          balas[i].y - 8,
+          ALLEGRO_FLIP_HORIZONTAL
+        );
     }
 }

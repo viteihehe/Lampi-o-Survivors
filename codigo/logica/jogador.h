@@ -51,8 +51,13 @@ void capturar_mira(ALLEGRO_EVENT evento, MapaDirecoes *teclas);
 
 void mover_jogador(MapaDirecoes teclas, Jogador *jogador);
 
-void criar_bala_jogador(Bala **balas, int *dest_quant, Jogador *jogador,
-                        ALLEGRO_TIMER *tick_timer, FolhaSprites sprites,
-                        Som som);
+void criar_bala_jogador(
+  Bala **balas,
+  int *dest_quant,
+  Jogador *jogador,
+  ALLEGRO_TIMER *tick_timer,
+  FolhaSprites sprites,
+  Som som
+);
 
 void mover_balas(Bala *balas, int quant_balas);

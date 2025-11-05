@@ -65,41 +65,41 @@ typedef struct {
 */
 EstadoGlobal gerar_estado(FolhaSprites sprites, Som sons) {
     Jogador canga = {
-        .sprite = sprites.canga,
-        .sons = sons,
-        .x = LARGURA / 2,
-        .y = ALTURA / 2,
+      .sprite = sprites.canga,
+      .sons = sons,
+      .x = LARGURA / 2,
+      .y = ALTURA / 2,
 
-        .vida = 3,
-        .vivo = true,
-        .cooldown_arma = 60,
-        .dano_delay = 1,
-        .velocidade = 3,
-        .dano = 30,
+      .vida = 3,
+      .vivo = true,
+      .cooldown_arma = 60,
+      .dano_delay = 1,
+      .velocidade = 3,
+      .dano = 30,
     };
 
     EstadoGlobal globs = {
-        .sons = sons,
-        .sprites = sprites,
-        .canga = canga,
+      .sons = sons,
+      .sprites = sprites,
+      .canga = canga,
 
-        /*
-            Mesmo que todos esses já virem NULL por padrão, vou deixar eles
-           documentados aqui pra ajudar a lembrar na hora de dar o free() no
-           reiniciar_estado().
-        */
-        .balas = NULL,
-        .homem_tatus = NULL,
-        .formigas = NULL,
-        .coldoown_tatu = 4,
-        .coldoown_formiga = 6,
-        .total_inimigos_wave = 10,
-        .inimigos_mortos = 0,
-        .delay_mensagem = 120,
-        .wave_ativa = true,
-        .contador_wave = 1,
-        .ultima_wave = 0,
-        .maximo_inimigos = 0,
+      /*
+          Mesmo que todos esses já virem NULL por padrão, vou deixar eles
+         documentados aqui pra ajudar a lembrar na hora de dar o free() no
+         reiniciar_estado().
+      */
+      .balas = NULL,
+      .homem_tatus = NULL,
+      .formigas = NULL,
+      .coldoown_tatu = 4,
+      .coldoown_formiga = 6,
+      .total_inimigos_wave = 10,
+      .inimigos_mortos = 0,
+      .delay_mensagem = 120,
+      .wave_ativa = true,
+      .contador_wave = 1,
+      .ultima_wave = 0,
+      .maximo_inimigos = 0,
     };
 
     return globs;
@@ -151,8 +151,13 @@ void waves(EstadoGlobal *globs) {
     }
 }
 
-void menu(ALLEGRO_BITMAP *menu, ALLEGRO_FONT *fonte, ALLEGRO_FONT *fonte50,
-          ALLEGRO_EVENT *ev, int *caso) {
+void menu(
+  ALLEGRO_BITMAP *menu,
+  ALLEGRO_FONT *fonte,
+  ALLEGRO_FONT *fonte50,
+  ALLEGRO_EVENT *ev,
+  int *caso
+) {
     int centro_x = LARGURA / 2 - 295;
     int larg = 400;
     int altu = 70;
@@ -162,42 +167,72 @@ void menu(ALLEGRO_BITMAP *menu, ALLEGRO_FONT *fonte, ALLEGRO_FONT *fonte50,
     al_clear_to_color(al_map_rgb(0, 0, 0));
     al_draw_bitmap(menu, 0, 0, 0);
 
-    desenhar_caixa_texto(mini, al_map_rgb(0, 0, 0), centro_x2 + 50,
-                         ALTURA / 2 - 120, larg + 200, altu + 40, fonte);
-    desenhar_caixa_texto(mini, al_map_rgb(0, 0, 0), centro_x2 + 50, 380, larg,
-                         altu2, fonte);
-    desenhar_caixa_texto(mini, al_map_rgb(0, 0, 0), centro_x2 + 50, 450, larg,
-                         altu2, fonte);
-    desenhar_caixa_texto(mini, al_map_rgb(0, 0, 0), centro_x2 + 50, 520, larg,
-                         altu2, fonte);
+    desenhar_caixa_texto(
+      mini,
+      al_map_rgb(0, 0, 0),
+      centro_x2 + 50,
+      ALTURA / 2 - 120,
+      larg + 200,
+      altu + 40,
+      fonte
+    );
+    desenhar_caixa_texto(
+      mini, al_map_rgb(0, 0, 0), centro_x2 + 50, 380, larg, altu2, fonte
+    );
+    desenhar_caixa_texto(
+      mini, al_map_rgb(0, 0, 0), centro_x2 + 50, 450, larg, altu2, fonte
+    );
+    desenhar_caixa_texto(
+      mini, al_map_rgb(0, 0, 0), centro_x2 + 50, 520, larg, altu2, fonte
+    );
 
-    al_draw_text(fonte50, al_map_rgb(255, 255, 255), centro_x,
-                 ALTURA / 2.0 - 150, 0, "CANGA SURVIVORS");
+    al_draw_text(
+      fonte50,
+      al_map_rgb(255, 255, 255),
+      centro_x,
+      ALTURA / 2.0 - 150,
+      0,
+      "CANGA SURVIVORS"
+    );
 
     switch (*caso) {
     case 0:
-        al_draw_text(fonte, al_map_rgb(255, 255, 255), centro_x2 - 25, 365, 0,
-                     "->jogar");
-        al_draw_text(fonte, al_map_rgb(255, 255, 255), centro_x2 - 10, 435, 0,
-                     "criadores");
-        al_draw_text(fonte, al_map_rgb(255, 255, 255), centro_x2, 505, 0,
-                     "sair");
+        al_draw_text(
+          fonte, al_map_rgb(255, 255, 255), centro_x2 - 25, 365, 0, "->jogar"
+        );
+        al_draw_text(
+          fonte, al_map_rgb(255, 255, 255), centro_x2 - 10, 435, 0, "criadores"
+        );
+        al_draw_text(
+          fonte, al_map_rgb(255, 255, 255), centro_x2, 505, 0, "sair"
+        );
         break;
     case 1:
-        al_draw_text(fonte, al_map_rgb(255, 255, 255), centro_x2, 365, 0,
-                     "jogar");
-        al_draw_text(fonte, al_map_rgb(255, 255, 255), centro_x2 - 35, 435, 0,
-                     "->criadores");
-        al_draw_text(fonte, al_map_rgb(255, 255, 255), centro_x2, 505, 0,
-                     "sair");
+        al_draw_text(
+          fonte, al_map_rgb(255, 255, 255), centro_x2, 365, 0, "jogar"
+        );
+        al_draw_text(
+          fonte,
+          al_map_rgb(255, 255, 255),
+          centro_x2 - 35,
+          435,
+          0,
+          "->criadores"
+        );
+        al_draw_text(
+          fonte, al_map_rgb(255, 255, 255), centro_x2, 505, 0, "sair"
+        );
         break;
     case 2:
-        al_draw_text(fonte, al_map_rgb(255, 255, 255), centro_x2, 365, 0,
-                     "jogar");
-        al_draw_text(fonte, al_map_rgb(255, 255, 255), centro_x2 - 10, 435, 0,
-                     "criadores");
-        al_draw_text(fonte, al_map_rgb(255, 255, 255), centro_x2 - 25, 505, 0,
-                     "->sair");
+        al_draw_text(
+          fonte, al_map_rgb(255, 255, 255), centro_x2, 365, 0, "jogar"
+        );
+        al_draw_text(
+          fonte, al_map_rgb(255, 255, 255), centro_x2 - 10, 435, 0, "criadores"
+        );
+        al_draw_text(
+          fonte, al_map_rgb(255, 255, 255), centro_x2 - 25, 505, 0, "->sair"
+        );
         break;
     default:
         *caso = 0;
@@ -227,13 +262,13 @@ int main() {
     al_register_event_source(fila, al_get_display_event_source(tela));
 
     ALLEGRO_FONT *fonte =
-        al_load_ttf_font("./materiais/fontes/FiftiesMovies.ttf", 32, 0);
+      al_load_ttf_font("./materiais/fontes/FiftiesMovies.ttf", 32, 0);
 
     ALLEGRO_FONT *fonte_titulo =
-        al_load_ttf_font("./materiais/fontes/FiftiesMovies.ttf", 70, 0);
+      al_load_ttf_font("./materiais/fontes/FiftiesMovies.ttf", 70, 0);
 
     ALLEGRO_BITMAP *menu_sprite =
-        al_load_bitmap("./materiais/sprites/menu2.png");
+      al_load_bitmap("./materiais/sprites/menu2.png");
 
     ALLEGRO_TIMER *tick_timer = al_create_timer(1.0 / FPS);
     al_register_event_source(fila, al_get_timer_event_source(tick_timer));
@@ -243,37 +278,38 @@ int main() {
     // Sprites
     // ----------
     FolhaSprites sprites = {
-        .canga = al_load_bitmap("./materiais/sprites/canga.png"),
-        .tatu = al_load_bitmap("./materiais/sprites/peba2_1.png"),
-        .formiga = al_load_bitmap("./materiais/sprites/formiga2.png"),
-        .cuspe = al_load_bitmap("./materiais/sprites/cuspe.png"),
+      .canga = al_load_bitmap("./materiais/sprites/canga.png"),
+      .tatu = al_load_bitmap("./materiais/sprites/peba2_1.png"),
+      .formiga = al_load_bitmap("./materiais/sprites/formiga2.png"),
+      .cuspe = al_load_bitmap("./materiais/sprites/cuspe.png"),
 
-        .bala = al_load_bitmap("./materiais/sprites/bala.png"),
-        .sombra = al_load_bitmap("./materiais/sprites/sombra.png"),
+      .bala = al_load_bitmap("./materiais/sprites/bala.png"),
+      .sombra = al_load_bitmap("./materiais/sprites/sombra.png"),
 
-        .areia = al_load_bitmap("./materiais/sprites/mapa/areia.png"),
-        .cacto = al_load_bitmap("./materiais/sprites/mapa/cacto.png"),
-        .pedra = al_load_bitmap("./materiais/sprites/mapa/pedra.png"),
-        .arbusto = al_load_bitmap("./materiais/sprites/mapa/arbusto.png"),
+      .areia = al_load_bitmap("./materiais/sprites/mapa/areia.png"),
+      .cacto = al_load_bitmap("./materiais/sprites/mapa/cacto.png"),
+      .pedra = al_load_bitmap("./materiais/sprites/mapa/pedra.png"),
+      .arbusto = al_load_bitmap("./materiais/sprites/mapa/arbusto.png"),
 
-        .grama = al_load_bitmap("./materiais/sprites/mapa/grama.png"),
-        .pedrinhas = al_load_bitmap("./materiais/sprites/mapa/pedrinhas.png"),
+      .grama = al_load_bitmap("./materiais/sprites/mapa/grama.png"),
+      .pedrinhas = al_load_bitmap("./materiais/sprites/mapa/pedrinhas.png"),
     };
 
     // ---------
     // Sons
     // ----------
     Som jogo_sons = {
-        al_load_audio_stream("./materiais/sons/trilhasonora_16bit.wav", 4, 2048),
-        al_load_sample("./materiais/sons/morte_16bit.wav"),
-        al_load_sample("./materiais/sons/disparo_16bit.wav"),
-        al_load_sample("./materiais/sons/hit_16bit.wav"),
-        al_load_audio_stream("./materiais/sons/derrota_16bit.wav", 4, 2048),
-        al_load_sample("./materiais/sons/hitini_16bit.wav"),
-        al_load_audio_stream("./materiais/sons/menu_16bit.wav", 4, 2048),
-        al_load_sample("./materiais/sons/som_menu_16bit.wav"),
-        al_load_sample("./materiais/sons/escolha_16bit.wav"),
-        al_load_sample("./materiais/sons/texto_16bit.wav")};
+      al_load_audio_stream("./materiais/sons/trilhasonora_16bit.wav", 4, 2048),
+      al_load_sample("./materiais/sons/morte_16bit.wav"),
+      al_load_sample("./materiais/sons/disparo_16bit.wav"),
+      al_load_sample("./materiais/sons/hit_16bit.wav"),
+      al_load_audio_stream("./materiais/sons/derrota_16bit.wav", 4, 2048),
+      al_load_sample("./materiais/sons/hitini_16bit.wav"),
+      al_load_audio_stream("./materiais/sons/menu_16bit.wav", 4, 2048),
+      al_load_sample("./materiais/sons/som_menu_16bit.wav"),
+      al_load_sample("./materiais/sons/escolha_16bit.wav"),
+      al_load_sample("./materiais/sons/texto_16bit.wav")
+    };
 
     // ----------
     // Globais
@@ -295,7 +331,7 @@ int main() {
     // Loop Principal
     // ----------
     // Variavel de controle
-    bool iniciar = false;
+    bool usuario_no_menu = true;
     // TODO: Deixar aleatório quando tiver mais do que 3
     EPowerUps powers_temp[3] = {AUMENTO_DANO, AUMENTO_VDA, AUMENTO_VDM};
 
@@ -303,9 +339,16 @@ int main() {
     for (;;) {
         al_wait_for_event(fila, &evento);
 
-        if (!iniciar) {
-            al_attach_audio_stream_to_mixer(jogo_sons.menu,
-                                            al_get_default_mixer());
+        if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
+            break;
+        }
+
+        if (usuario_no_menu) {
+            // exibir_menu()
+
+            al_attach_audio_stream_to_mixer(
+              jogo_sons.menu, al_get_default_mixer()
+            );
             al_set_audio_stream_gain(jogo_sons.menu, 0.6);
             al_set_audio_stream_playmode(jogo_sons.menu, ALLEGRO_PLAYMODE_LOOP);
             menu(menu_sprite, fonte, fonte_titulo, &evento, &caso);
@@ -315,175 +358,242 @@ int main() {
                 if (evento.keyboard.keycode == ALLEGRO_KEY_UP ||
                     evento.keyboard.keycode == ALLEGRO_KEY_W) {
                     caso--;
-                    al_play_sample(jogo_sons.selecao, 1, 0, 1,
-                                   ALLEGRO_PLAYMODE_ONCE, 0);
+                    al_play_sample(
+                      jogo_sons.selecao, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, 0
+                    );
                 }
                 if (evento.keyboard.keycode == ALLEGRO_KEY_DOWN ||
                     evento.keyboard.keycode == ALLEGRO_KEY_S) {
                     caso++;
-                    al_play_sample(jogo_sons.selecao, 1, 0, 1,
-                                   ALLEGRO_PLAYMODE_ONCE, 0);
+                    al_play_sample(
+                      jogo_sons.selecao, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, 0
+                    );
                 }
                 if (evento.keyboard.keycode == ALLEGRO_KEY_ENTER ||
                     evento.keyboard.keycode == ALLEGRO_KEY_SPACE) {
                     if (caso == 0) {
-                        iniciar = true;
-                        al_play_sample(jogo_sons.escolha, 1, 0, 1,
-                                       ALLEGRO_PLAYMODE_ONCE, 0);
+                        usuario_no_menu = false;
+                        al_play_sample(
+                          jogo_sons.escolha, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, 0
+                        );
                     }
                     if (caso == 2) {
-                        al_play_sample(jogo_sons.escolha, 1, 0, 1,
-                                       ALLEGRO_PLAYMODE_ONCE, 0);
+                        al_play_sample(
+                          jogo_sons.escolha, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, 0
+                        );
                         break;
                     }
                 }
-            }
-
-            if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
-                break;
             }
 
             continue;
         }
-        if (iniciar) {
-            al_set_audio_stream_playing(jogo_sons.menu, false);
-            al_attach_audio_stream_to_mixer(jogo_sons.musica_de_fundo,
-                                            al_get_default_mixer());
-            al_set_audio_stream_gain(jogo_sons.musica_de_fundo, 0.6);
-            al_set_audio_stream_playmode(jogo_sons.musica_de_fundo,
-                                         ALLEGRO_PLAYMODE_LOOP);
-            al_attach_audio_stream_to_mixer(jogo_sons.musica_derrota,
-                                            al_get_default_mixer());
-            al_set_audio_stream_playmode(jogo_sons.musica_derrota,
-                                         ALLEGRO_PLAYMODE_LOOP);
-            al_set_audio_stream_gain(jogo_sons.musica_derrota, 0.6);
 
-            capturar_movimento(evento, &globs.canga.movimento);
-            capturar_mira(evento, &globs.canga.mira);
+        al_set_audio_stream_playing(jogo_sons.menu, false);
+        al_attach_audio_stream_to_mixer(
+          jogo_sons.musica_de_fundo, al_get_default_mixer()
+        );
+        al_set_audio_stream_gain(jogo_sons.musica_de_fundo, 0.6);
+        al_set_audio_stream_playmode(
+          jogo_sons.musica_de_fundo, ALLEGRO_PLAYMODE_LOOP
+        );
+        al_attach_audio_stream_to_mixer(
+          jogo_sons.musica_derrota, al_get_default_mixer()
+        );
+        al_set_audio_stream_playmode(
+          jogo_sons.musica_derrota, ALLEGRO_PLAYMODE_LOOP
+        );
+        al_set_audio_stream_gain(jogo_sons.musica_derrota, 0.6);
 
-            if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
-                break;
+        capturar_movimento(evento, &globs.canga.movimento);
+        capturar_mira(evento, &globs.canga.mira);
+
+        if (!globs.canga.vivo) {
+            redesenhar_mapa(sprites);
+            al_set_audio_stream_playing(jogo_sons.musica_de_fundo, false);
+            al_set_audio_stream_playing(jogo_sons.musica_derrota, true);
+
+            al_draw_filled_rectangle(
+              0, 0, LARGURA, ALTURA, al_map_rgba(25, 0, 0, 150)
+            );
+            al_draw_filled_rectangle(
+              0,
+              (ALTURA / 2.0) - 80,
+              LARGURA,
+              (ALTURA / 2.0) + 80,
+              al_map_rgb(0, 0, 0)
+            );
+
+            al_draw_text(
+              fonte,
+              al_map_rgb(255, 255, 255),
+              LARGURA / 2.0,
+              (ALTURA / 2.0) - 40,
+              ALLEGRO_ALIGN_CENTER,
+              "SE LASCÔ!"
+            );
+            al_draw_text(
+              fonte,
+              al_map_rgb(150, 150, 150),
+              LARGURA / 2.0,
+              (ALTURA / 2.0) + 10,
+              ALLEGRO_ALIGN_CENTER,
+              "Pressione [ESPAÇO] para recomeçar."
+            );
+
+            if (evento.keyboard.keycode == ALLEGRO_KEY_SPACE) {
+                reiniciar_estado(&globs);
             }
 
-            if (!globs.canga.vivo) {
-                redesenhar_mapa(sprites);
-                al_set_audio_stream_playing(jogo_sons.musica_de_fundo, false);
-                al_set_audio_stream_playing(jogo_sons.musica_derrota, true);
+            al_flip_display();
+            continue;
+        }
 
-                al_draw_filled_rectangle(0, 0, LARGURA, ALTURA,
-                                         al_map_rgba(25, 0, 0, 150));
-                al_draw_filled_rectangle(0, (ALTURA / 2.0) - 80, LARGURA,
-                                         (ALTURA / 2.0) + 80,
-                                         al_map_rgb(0, 0, 0));
+        if (globs.canga.xp >= 15) {
+            redesenhar_mapa(sprites);
+            desenhar_powerups(powers_temp, fonte);
 
-                al_draw_text(fonte, al_map_rgb(255, 255, 255), LARGURA / 2.0,
-                             (ALTURA / 2.0) - 40, ALLEGRO_ALIGN_CENTER,
-                             "SE LASCÔ!");
-                al_draw_text(fonte, al_map_rgb(150, 150, 150), LARGURA / 2.0,
-                             (ALTURA / 2.0) + 10, ALLEGRO_ALIGN_CENTER,
-                             "Pressione [ESPAÇO] para recomeçar.");
+            if (evento.type == ALLEGRO_EVENT_KEY_DOWN) {
+                switch (evento.keyboard.keycode) {
+                case ALLEGRO_KEY_1:
+                    aplicar_power(&globs.canga, powers_temp[0]);
+                    globs.canga.xp = 0;
+                    break;
 
-                if (evento.keyboard.keycode == ALLEGRO_KEY_SPACE) {
-                    reiniciar_estado(&globs);
+                case ALLEGRO_KEY_2:
+                    aplicar_power(&globs.canga, powers_temp[1]);
+                    globs.canga.xp = 0;
+                    break;
+
+                case ALLEGRO_KEY_3:
+                    aplicar_power(&globs.canga, powers_temp[2]);
+                    globs.canga.xp = 0;
+                    break;
                 }
-
-                al_flip_display();
-                continue;
             }
 
-            if (globs.canga.xp >= 15) {
-                redesenhar_mapa(sprites);
-                desenhar_powerups(powers_temp, fonte);
+            al_flip_display();
+            continue;
+        }
 
-                if (evento.type == ALLEGRO_EVENT_KEY_DOWN) {
-                    switch (evento.keyboard.keycode) {
-                    case ALLEGRO_KEY_1:
-                        aplicar_power(&globs.canga, powers_temp[0]);
-                        globs.canga.xp = 0;
-                        break;
+        if (evento.type == ALLEGRO_EVENT_TIMER) {
+            criar_bala_jogador(
+              &globs.balas,
+              &globs.quant_balas,
+              &globs.canga,
+              tick_timer,
+              globs.sprites,
+              globs.sons
+            );
 
-                    case ALLEGRO_KEY_2:
-                        aplicar_power(&globs.canga, powers_temp[1]);
-                        globs.canga.xp = 0;
-                        break;
+            al_set_audio_stream_playing(jogo_sons.musica_de_fundo, true);
+            al_set_audio_stream_playing(jogo_sons.musica_derrota, false);
+            waves(&globs);
+            criar_bala_jogador(
+              &globs.balas,
+              &globs.quant_balas,
+              &globs.canga,
+              tick_timer,
+              globs.sprites,
+              globs.sons
+            );
 
-                    case ALLEGRO_KEY_3:
-                        aplicar_power(&globs.canga, powers_temp[2]);
-                        globs.canga.xp = 0;
-                        break;
-                    }
-                }
+            // --------
+            // Inimigos
+            // --------
+            globs.counts = al_get_time();
 
-                al_flip_display();
-                continue;
+            if (globs.maximo_inimigos < globs.total_inimigos_wave) {
+                int tipo = rand() % 2;
+                criarInimigo(
+                  &globs.homem_tatus,
+                  &globs.formigas,
+                  &globs.counts,
+                  globs.sprites.formiga,
+                  globs.sprites.tatu,
+                  &globs.ultimo_spawn_tatu,
+                  &globs.ultimo_spawn_formiga,
+                  &globs.indice_tatu,
+                  &globs.indice_formiga,
+                  &globs.coldoown_tatu,
+                  &globs.coldoown_formiga,
+                  tipo,
+                  &globs.maximo_inimigos
+                );
             }
 
-            if (evento.type == ALLEGRO_EVENT_TIMER) {
-                criar_bala_jogador(&globs.balas, &globs.quant_balas,
-                                   &globs.canga, tick_timer, globs.sprites,
-                                   globs.sons);
+            inimigosLogica(
+              globs.homem_tatus,
+              &globs.indice_tatu,
+              globs.canga,
+              &globs.counts,
+              globs.sprites.cuspe
+            );
+            inimigosLogica(
+              globs.formigas,
+              &globs.indice_formiga,
+              globs.canga,
+              &globs.counts,
+              globs.sprites.cuspe
+            );
+            processamentoBala(
+              globs.homem_tatus,
+              &globs.indice_tatu,
+              globs.balas,
+              &globs.quant_balas,
+              28,
+              &globs.canga,
+              &globs.sons,
+              &globs.inimigos_mortos
+            );
+            processamentoBala(
+              globs.formigas,
+              &globs.indice_formiga,
+              globs.balas,
+              &globs.quant_balas,
+              22,
+              &globs.canga,
+              &globs.sons,
+              &globs.inimigos_mortos
+            );
+            danoJogador(
+              globs.homem_tatus,
+              &globs.canga,
+              globs.indice_tatu,
+              globs.counts,
+              globs.sons
+            );
+            danoJogador(
+              globs.formigas,
+              &globs.canga,
+              globs.indice_formiga,
+              globs.counts,
+              globs.sons
+            );
 
-                al_set_audio_stream_playing(jogo_sons.musica_de_fundo, true);
-                al_set_audio_stream_playing(jogo_sons.musica_derrota, false);
-                waves(&globs);
-                criar_bala_jogador(&globs.balas, &globs.quant_balas,
-                                   &globs.canga, tick_timer, globs.sprites,
-                                   globs.sons);
-
-                // --------
-                // Inimigos
-                // --------
-                globs.counts = al_get_time();
-
-                if (globs.maximo_inimigos < globs.total_inimigos_wave) {
-                    int tipo = rand() % 2;
-                    criarInimigo(&globs.homem_tatus, &globs.formigas,
-                                 &globs.counts, globs.sprites.formiga,
-                                 globs.sprites.tatu, &globs.ultimo_spawn_tatu,
-                                 &globs.ultimo_spawn_formiga,
-                                 &globs.indice_tatu, &globs.indice_formiga,
-                                 &globs.coldoown_tatu, &globs.coldoown_formiga,
-                                 tipo, &globs.maximo_inimigos);
-                }
-
-                inimigosLogica(globs.homem_tatus, &globs.indice_tatu,
-                               globs.canga, &globs.counts, globs.sprites.cuspe);
-                inimigosLogica(globs.formigas, &globs.indice_formiga,
-                               globs.canga, &globs.counts, globs.sprites.cuspe);
-                processamentoBala(globs.homem_tatus, &globs.indice_tatu,
-                                  globs.balas, &globs.quant_balas, 28,
-                                  &globs.canga, &globs.sons,
-                                  &globs.inimigos_mortos);
-                processamentoBala(globs.formigas, &globs.indice_formiga,
-                                  globs.balas, &globs.quant_balas, 22,
-                                  &globs.canga, &globs.sons,
-                                  &globs.inimigos_mortos);
-                danoJogador(globs.homem_tatus, &globs.canga, globs.indice_tatu,
-                            globs.counts, globs.sons);
-                danoJogador(globs.formigas, &globs.canga, globs.indice_formiga,
-                            globs.counts, globs.sons);
-
-                // ----------
-                // Redesenho
-                // ----------
-                redesenhar_mapa(sprites);
-                mover_jogador(globs.canga.movimento, &globs.canga);
-                desenharInimigo(globs.homem_tatus, globs.indice_tatu,
-                                globs.canga);
-                desenharInimigo(globs.formigas, globs.indice_formiga,
-                                globs.canga);
-                mover_balas(globs.balas, globs.quant_balas);
-                if (globs.delay_mensagem > 0) {
-                    al_draw_textf(fonte, al_map_rgb(255, 255, 255),
-                                  LARGURA / 2.0, ALTURA / 2.0 - 200,
-                                  ALLEGRO_ALIGN_CENTER, "WAVE %d",
-                                  globs.contador_wave);
-                    globs.delay_mensagem--;
-                }
-                desenhar_vidas(globs.homem_tatus, globs.indice_tatu);
-                desenhar_vidas(globs.formigas, globs.indice_formiga);
-                al_flip_display();
+            // ----------
+            // Redesenho
+            // ----------
+            redesenhar_mapa(sprites);
+            mover_jogador(globs.canga.movimento, &globs.canga);
+            desenharInimigo(globs.homem_tatus, globs.indice_tatu, globs.canga);
+            desenharInimigo(globs.formigas, globs.indice_formiga, globs.canga);
+            mover_balas(globs.balas, globs.quant_balas);
+            if (globs.delay_mensagem > 0) {
+                al_draw_textf(
+                  fonte,
+                  al_map_rgb(255, 255, 255),
+                  LARGURA / 2.0,
+                  ALTURA / 2.0 - 200,
+                  ALLEGRO_ALIGN_CENTER,
+                  "WAVE %d",
+                  globs.contador_wave
+                );
+                globs.delay_mensagem--;
             }
+            desenhar_vidas(globs.homem_tatus, globs.indice_tatu);
+            desenhar_vidas(globs.formigas, globs.indice_formiga);
+            al_flip_display();
         }
     }
 
