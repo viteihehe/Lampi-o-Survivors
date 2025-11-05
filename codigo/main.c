@@ -151,6 +151,54 @@ void waves(EstadoGlobal *globs) {
     }
 }
 
+void desenhar_menu(
+  int *indice_botao_ativo,
+  ALLEGRO_BITMAP *fundo,
+  Som sons,
+  ALLEGRO_FONT *fonte_menu,
+  ALLEGRO_FONT *fonte_botao,
+  ALLEGRO_EVENT evento
+) {
+    al_draw_bitmap(fundo, 0, 0, 0);
+
+    // Título
+    desenhar_caixa_texto(
+      "CANGA SURVIVORS",
+      al_map_rgb(255, 255, 255),
+      LARGURA / 2,
+      ALTURA / 2 - 150,
+      620,
+      120,
+      fonte_menu
+    );
+
+    // Botões
+    desenhar_caixa_texto(
+      "Jogar", COR_BRANCO, LARGURA / 2, ALTURA / 2, 300, 70, fonte_botao
+    );
+
+    desenhar_caixa_texto(
+      "Créditos", COR_BRANCO, LARGURA / 2, ALTURA / 2 + 80, 300, 70, fonte_botao
+    );
+
+    desenhar_caixa_texto(
+      "Sair", COR_BRANCO, LARGURA / 2, ALTURA / 2 + 160, 300, 70, fonte_botao
+    );
+
+    // Selecionador
+    desenhar_caixa_texto(
+      "->",
+      COR_BRANCO,
+      LARGURA / 2 - 150 - 50,
+      ALTURA / 2 + (80 * *indice_botao_ativo),
+      70,
+      70,
+      fonte_botao
+    );
+
+    al_flip_display();
+}
+
 void menu(
   ALLEGRO_BITMAP *menu,
   ALLEGRO_FONT *fonte,
@@ -330,8 +378,10 @@ int main() {
     // ----------
     // Loop Principal
     // ----------
-    // Variavel de controle
+
     bool usuario_no_menu = true;
+    int botao_menu_ativo = 0;
+
     // TODO: Deixar aleatório quando tiver mais do que 3
     EPowerUps powers_temp[3] = {AUMENTO_DANO, AUMENTO_VDA, AUMENTO_VDM};
 
@@ -344,49 +394,71 @@ int main() {
         }
 
         if (usuario_no_menu) {
-            // exibir_menu()
-
-            al_attach_audio_stream_to_mixer(
-              jogo_sons.menu, al_get_default_mixer()
-            );
-            al_set_audio_stream_gain(jogo_sons.menu, 0.6);
-            al_set_audio_stream_playmode(jogo_sons.menu, ALLEGRO_PLAYMODE_LOOP);
-            menu(menu_sprite, fonte, fonte_titulo, &evento, &caso);
-            al_flip_display();
-
             if (evento.type == ALLEGRO_EVENT_KEY_DOWN) {
-                if (evento.keyboard.keycode == ALLEGRO_KEY_UP ||
-                    evento.keyboard.keycode == ALLEGRO_KEY_W) {
-                    caso--;
-                    al_play_sample(
-                      jogo_sons.selecao, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, 0
-                    );
-                }
-                if (evento.keyboard.keycode == ALLEGRO_KEY_DOWN ||
-                    evento.keyboard.keycode == ALLEGRO_KEY_S) {
-                    caso++;
-                    al_play_sample(
-                      jogo_sons.selecao, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, 0
-                    );
-                }
-                if (evento.keyboard.keycode == ALLEGRO_KEY_ENTER ||
-                    evento.keyboard.keycode == ALLEGRO_KEY_SPACE) {
-                    if (caso == 0) {
-                        usuario_no_menu = false;
-                        al_play_sample(
-                          jogo_sons.escolha, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, 0
-                        );
-                    }
-                    if (caso == 2) {
-                        al_play_sample(
-                          jogo_sons.escolha, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, 0
-                        );
-                        break;
-                    }
+                switch (evento.keyboard.keycode) {
+                case ALLEGRO_KEY_W:
+                case ALLEGRO_KEY_UP:
+                    ciclar_inteiro(&botao_menu_ativo, 0, 2, -1);
+                    break;
+
+                case ALLEGRO_KEY_S:
+                case ALLEGRO_KEY_DOWN:
+                    ciclar_inteiro(&botao_menu_ativo, 0, 2, +1);
+                    break;
                 }
             }
 
+            desenhar_menu(
+              &botao_menu_ativo,
+              menu_sprite,
+              jogo_sons,
+              fonte_titulo,
+              fonte,
+              evento
+            );
             continue;
+
+            // al_attach_audio_stream_to_mixer(
+            //   jogo_sons.menu, al_get_default_mixer()
+            // );
+            // al_set_audio_stream_gain(jogo_sons.menu, 0.6);
+            // al_set_audio_stream_playmode(jogo_sons.menu,
+            // ALLEGRO_PLAYMODE_LOOP); menu(menu_sprite, fonte, fonte_titulo,
+            // &evento, &caso); al_flip_display();
+
+            // if (evento.type == ALLEGRO_EVENT_KEY_DOWN) {
+            //     if (evento.keyboard.keycode == ALLEGRO_KEY_UP ||
+            //         evento.keyboard.keycode == ALLEGRO_KEY_W) {
+            //         caso--;
+            //         al_play_sample(
+            //           jogo_sons.selecao, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, 0
+            //         );
+            //     }
+            //     if (evento.keyboard.keycode == ALLEGRO_KEY_DOWN ||
+            //         evento.keyboard.keycode == ALLEGRO_KEY_S) {
+            //         caso++;
+            //         al_play_sample(
+            //           jogo_sons.selecao, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, 0
+            //         );
+            //     }
+            //     if (evento.keyboard.keycode == ALLEGRO_KEY_ENTER ||
+            //         evento.keyboard.keycode == ALLEGRO_KEY_SPACE) {
+            //         if (caso == 0) {
+            //             usuario_no_menu = false;
+            //             al_play_sample(
+            //               jogo_sons.escolha, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE,
+            //               0
+            //             );
+            //         }
+            //         if (caso == 2) {
+            //             al_play_sample(
+            //               jogo_sons.escolha, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE,
+            //               0
+            //             );
+            //             break;
+            //         }
+            //     }
+            // }
         }
 
         al_set_audio_stream_playing(jogo_sons.menu, false);

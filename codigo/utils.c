@@ -46,3 +46,19 @@ void desenhar_caixa_texto(
       texto
     );
 }
+
+/*
+    Atualiza o `indice` ciclicamente como base no mínimo, máximo e no
+   incremento.
+*/
+void ciclar_inteiro(int *indice, int min, int max, int incremento) {
+    *indice += incremento;
+
+    if (*indice < min) {
+        *indice = max;
+    }
+
+    if (*indice > max) {
+        *indice = min;
+    }
+}

@@ -10,3 +10,5 @@ void desenhar_caixa_texto(
   float altu,
   ALLEGRO_FONT *fonte
 );
+
+void ciclar_inteiro(int *indice, int min, int max, int incremento);
