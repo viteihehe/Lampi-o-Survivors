@@ -506,7 +506,7 @@ void danoJogador(
 /*
     Redesenha a barra de vida acima das cabeças dos inimigos.
 */
-void desenhar_vidas(Inimigo *inimigos, int quant_inimigos) {
+void desenhar_vida_inimigos(Inimigo *inimigos, int quant_inimigos) {
     for (int i = 0; i < quant_inimigos; i++) {
         int desvio = inimigos[i].tamanho_sprite / 2;
 

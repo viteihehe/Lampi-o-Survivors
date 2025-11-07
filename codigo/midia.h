@@ -4,6 +4,7 @@
 
 typedef struct {
     ALLEGRO_BITMAP *canga;
+    ALLEGRO_BITMAP *coracao;
 
     ALLEGRO_BITMAP *tatu;
     ALLEGRO_BITMAP *formiga;

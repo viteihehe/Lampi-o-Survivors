@@ -132,13 +132,6 @@ void mover_jogador(MapaDirecoes teclas, Jogador *jogador) {
     al_draw_bitmap(
       jogador->sprite, jogador->x - 32, jogador->y - 32, ALLEGRO_FLIP_HORIZONTAL
     );
-    int temp = -((jogador->vida * 15) - 5) / 2;
-    for (int x = 0; x < jogador->vida; x++) {
-        al_draw_filled_circle(
-          jogador->x + temp, jogador->y - 40, 5, al_map_rgb(255, 0, 0)
-        );
-        temp += 15;
-    }
 }
 
 /*
@@ -225,5 +218,16 @@ void mover_balas(Bala *balas, int quant_balas) {
           balas[i].y - 8,
           ALLEGRO_FLIP_HORIZONTAL
         );
+    }
+}
+
+/*
+    Redesenha as vidas em cima do canga.
+*/
+void desenhar_vida_jogador(Jogador *canga, FolhaSprites sprites) {
+    float inicial = canga->x - (8 * canga->vida);
+
+    for (int i = 0; i < canga->vida; i++) {
+        al_draw_bitmap(sprites.coracao, inicial + (i * 16), canga->y - 50, 0);
     }
 }

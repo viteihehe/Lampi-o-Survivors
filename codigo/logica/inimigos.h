@@ -83,4 +83,4 @@ void danoJogador(
   Inimigo inimigos[], Jogador *canga, int indice, double counts, Som som
 );
 
-void desenhar_vidas(Inimigo *inimigos, int quant_inimigos);
+void desenhar_vida_inimigos(Inimigo *inimigos, int quant_inimigos);

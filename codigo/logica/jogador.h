@@ -61,3 +61,5 @@ void criar_bala_jogador(
 );
 
 void mover_balas(Bala *balas, int quant_balas);
+
+void desenhar_vida_jogador(Jogador *canga, FolhaSprites sprites);

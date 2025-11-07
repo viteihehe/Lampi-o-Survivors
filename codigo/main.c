@@ -73,7 +73,7 @@ EstadoGlobal gerar_estado(FolhaSprites sprites, Som sons) {
       .vida = 3,
       .vivo = true,
       .cooldown_arma = 60,
-      .dano_delay = 1,
+      .dano_delay = 2,
       .velocidade = 3,
       .dano = 30,
     };
@@ -250,6 +250,8 @@ int main() {
     // ----------
     FolhaSprites sprites = {
       .canga = al_load_bitmap("./materiais/sprites/canga.png"),
+      .coracao = al_load_bitmap("./materiais/sprites/coracao.png"),
+
       .tatu = al_load_bitmap("./materiais/sprites/peba2_1.png"),
       .formiga = al_load_bitmap("./materiais/sprites/formiga2.png"),
       .cuspe = al_load_bitmap("./materiais/sprites/cuspe.png"),
@@ -597,8 +599,10 @@ int main() {
                 );
                 globs.delay_mensagem--;
             }
-            desenhar_vidas(globs.homem_tatus, globs.indice_tatu);
-            desenhar_vidas(globs.formigas, globs.indice_formiga);
+
+            desenhar_vida_jogador(&globs.canga, globs.sprites);
+            desenhar_vida_inimigos(globs.homem_tatus, globs.indice_tatu);
+            desenhar_vida_inimigos(globs.formigas, globs.indice_formiga);
             al_flip_display();
         }
     }
