@@ -1,4 +1,5 @@
 #include "utils.h"
+#include "constantes.h"
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_primitives.h>
 
@@ -20,21 +21,12 @@ void desenhar_caixa_texto(
 
     // Preenchimento
     al_draw_filled_rectangle(
-      x - desvio_x,
-      y - desvio_y,
-      x + desvio_x,
-      y + desvio_y,
-      al_map_rgb(0, 0, 0)
+      x - desvio_x, y - desvio_y, x + desvio_x, y + desvio_y, COR_PRETO
     );
 
     // Bordas
     al_draw_rectangle(
-      x - desvio_x,
-      y - desvio_y,
-      x + desvio_x,
-      y + desvio_y,
-      al_map_rgb(255, 255, 255),
-      5
+      x - desvio_x, y - desvio_y, x + desvio_x, y + desvio_y, COR_BRANCO, 5
     );
 
     al_draw_text(

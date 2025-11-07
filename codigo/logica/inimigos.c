@@ -515,7 +515,7 @@ void desenhar_vida_inimigos(Inimigo *inimigos, int quant_inimigos) {
           inimigos[i].posy - 45,
           inimigos[i].posx + desvio,
           inimigos[i].posy - 40,
-          al_map_rgb(0, 0, 0)
+          COR_PRETO
         );
 
         float proporcao_vida = (float)inimigos[i].vida / inimigos[i].vida_max;

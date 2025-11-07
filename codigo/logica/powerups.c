@@ -45,7 +45,7 @@ void desenhar_powerups(EPowerUps powers[3], ALLEGRO_FONT *fonte) {
         }
 
         desenhar_caixa_texto(
-          desc, al_map_rgb(255, 255, 255), x, y - desvio, larg, altu, fonte
+          desc, COR_BRANCO, x, y - desvio, larg, altu, fonte
         );
 
         mini[0] = '1' + i;

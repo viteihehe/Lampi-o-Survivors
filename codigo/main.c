@@ -173,7 +173,7 @@ void desenhar_menu(
     // Título
     desenhar_caixa_texto(
       "CANGA SURVIVORS",
-      al_map_rgb(255, 255, 255),
+      COR_BRANCO,
       LARGURA / 2,
       ALTURA / 2 - 150,
       620,
@@ -419,16 +419,12 @@ int main() {
               0, 0, LARGURA, ALTURA, al_map_rgba(25, 0, 0, 150)
             );
             al_draw_filled_rectangle(
-              0,
-              (ALTURA / 2.0) - 80,
-              LARGURA,
-              (ALTURA / 2.0) + 80,
-              al_map_rgb(0, 0, 0)
+              0, (ALTURA / 2.0) - 80, LARGURA, (ALTURA / 2.0) + 80, COR_PRETO
             );
 
             al_draw_text(
               fonte,
-              al_map_rgb(255, 255, 255),
+              COR_BRANCO,
               LARGURA / 2.0,
               (ALTURA / 2.0) - 40,
               ALLEGRO_ALIGN_CENTER,
@@ -590,7 +586,7 @@ int main() {
             if (globs.delay_mensagem > 0) {
                 al_draw_textf(
                   fonte,
-                  al_map_rgb(255, 255, 255),
+                  COR_BRANCO,
                   LARGURA / 2.0,
                   ALTURA / 2.0 - 200,
                   ALLEGRO_ALIGN_CENTER,
