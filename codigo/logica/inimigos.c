@@ -510,6 +510,16 @@ void desenhar_vida_inimigos(Inimigo *inimigos, int quant_inimigos) {
     for (int i = 0; i < quant_inimigos; i++) {
         int desvio = inimigos[i].tamanho_sprite / 2;
 
+        // Contorno
+        al_draw_filled_rectangle(
+          inimigos[i].posx - desvio - 1,
+          inimigos[i].posy - 45 - 1,
+          inimigos[i].posx + desvio + 1,
+          inimigos[i].posy - 40 + 1,
+          COR_BRANCO
+        );
+
+        // Fundo
         al_draw_filled_rectangle(
           inimigos[i].posx - desvio,
           inimigos[i].posy - 45,
@@ -518,6 +528,7 @@ void desenhar_vida_inimigos(Inimigo *inimigos, int quant_inimigos) {
           COR_PRETO
         );
 
+        // Vida
         float proporcao_vida = (float)inimigos[i].vida / inimigos[i].vida_max;
 
         al_draw_filled_rectangle(
