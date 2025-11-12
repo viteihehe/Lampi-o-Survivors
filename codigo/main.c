@@ -93,7 +93,7 @@ EstadoGlobal gerar_estado(FolhaSprites sprites, Som sons) {
       .formigas = NULL,
       .coldoown_tatu = 4,
       .coldoown_formiga = 6,
-      .total_inimigos_wave = 10,
+      .total_inimigos_wave = 5,
       .inimigos_mortos = 0,
       .delay_mensagem = 120,
       .wave_ativa = true,
@@ -131,15 +131,15 @@ void waves(EstadoGlobal *globs) {
     if (globs->wave_ativa &&
         globs->inimigos_mortos >= globs->total_inimigos_wave) {
         globs->wave_ativa = false;
-        globs->delay_mensagem = 120;
         globs->ultima_wave = al_get_time();
     }
-    if (!globs->wave_ativa && al_get_time() - globs->ultima_wave >= 3) {
+    if (!globs->wave_ativa && al_get_time() - globs->ultima_wave >= 1) {
         globs->contador_wave++;
         globs->total_inimigos_wave += 2;
         globs->inimigos_mortos = 0;
         globs->maximo_inimigos = 0;
         globs->wave_ativa = true;
+        globs->delay_mensagem = 120;
 
         reiniciar_inimigos(globs);
         if (globs->coldoown_tatu >= 0.5) {
@@ -526,6 +526,16 @@ int main() {
                 );
             }
 
+            // printf(
+            //   "Wave: %d | Mortos: %d/%d | Max: %d | Ativa: %d\n",
+            //   globs.contador_wave,
+            //   globs.inimigos_mortos,
+            //   globs.total_inimigos_wave,
+            //   globs.maximo_inimigos,
+            //   globs.wave_ativa
+            // );
+            // Caso queira ver a wave funcionando
+
             inimigosLogica(
               globs.homem_tatus,
               &globs.indice_tatu,
@@ -584,13 +594,16 @@ int main() {
             desenharInimigo(globs.formigas, globs.indice_formiga, globs.canga);
             mover_balas(globs.balas, globs.quant_balas);
             if (globs.delay_mensagem > 0) {
+                desenhar_caixa_texto(
+                  "Wave", COR_PRETO, LARGURA / 2, 100, 200, 50, fonte
+                );
                 al_draw_textf(
                   fonte,
                   COR_BRANCO,
-                  LARGURA / 2.0,
-                  ALTURA / 2.0 - 200,
-                  ALLEGRO_ALIGN_CENTER,
-                  "WAVE %d",
+                  LARGURA / 2,
+                  90,
+                  ALLEGRO_ALIGN_CENTRE,
+                  "Wave %d",
                   globs.contador_wave
                 );
                 globs.delay_mensagem--;

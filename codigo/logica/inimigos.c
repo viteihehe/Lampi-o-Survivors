@@ -178,16 +178,16 @@ void inimigosLogica(
             if (inimigos[i].posy > canga.y) {
                 y_futuro -= inimigos[i].velocidade;
             }
-            //  if (!colide_no_cenario(x_futuro, y_futuro, 22)) {
-            //     inimigos[i].posx = x_futuro;
-            //     inimigos[i].posy = y_futuro;
-            // }
-            if (!colide_no_cenario((int)x_futuro, (int)inimigos[i].posy, 64)) {
+             if (!colide_no_cenario(x_futuro, y_futuro, 22)) {
                 inimigos[i].posx = x_futuro;
-            }
-            if (!colide_no_cenario((int)inimigos[i].posx, (int)y_futuro, 64)) {
                 inimigos[i].posy = y_futuro;
             }
+            // if (!colide_no_cenario((int)x_futuro, (int)inimigos[i].posy, 64)) {
+            //     inimigos[i].posx = x_futuro;
+            // }
+            // if (!colide_no_cenario((int)inimigos[i].posx, (int)y_futuro, 64)) {
+            //     inimigos[i].posy = y_futuro;
+            // }
         }
 
         if (inimigos[i].comportamento == FORMIGA) {
