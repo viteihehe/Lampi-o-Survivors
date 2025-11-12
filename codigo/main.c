@@ -601,25 +601,21 @@ int main() {
             desenharInimigo(globs.homem_tatus, globs.indice_tatu, globs.canga);
             desenharInimigo(globs.formigas, globs.indice_formiga, globs.canga);
             mover_balas(globs.balas, globs.quant_balas);
-            if (globs.delay_mensagem > 0) {
-                desenhar_caixa_texto(
-                    "Wave", COR_PRETO, LARGURA / 2, 100, 200, 50, fonte
-                );
-                al_draw_textf(
-                    fonte,
-                    COR_BRANCO,
-                    LARGURA / 2,
-                    90,
-                    ALLEGRO_ALIGN_CENTRE,
-                    "Wave %d",
-                    globs.contador_wave
-                );
-                globs.delay_mensagem--;
-            }
-
             desenhar_vida_jogador(&globs.canga, globs.sprites);
             desenhar_vida_inimigos(globs.homem_tatus, globs.indice_tatu);
             desenhar_vida_inimigos(globs.formigas, globs.indice_formiga);
+
+            if (globs.delay_mensagem > 0) {
+                char mensagem_wave[30];
+                sprintf(mensagem_wave, "Wave %i", globs.contador_wave);
+
+                desenhar_caixa_texto(
+                    mensagem_wave, COR_BRANCO, LARGURA / 2, 120, 220, 60, fonte
+                );
+
+                globs.delay_mensagem--;
+            }
+
             al_flip_display();
         }
     }
