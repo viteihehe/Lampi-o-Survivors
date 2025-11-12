@@ -130,6 +130,8 @@ void reiniciar_inimigos(EstadoGlobal *globs) {
 void waves(EstadoGlobal *globs) {
     if (globs->wave_ativa &&
         globs->inimigos_mortos >= globs->total_inimigos_wave) {
+
+        globs->canga.powerup_pronto = true;
         globs->wave_ativa = false;
         globs->ultima_wave = al_get_time();
     }
@@ -458,7 +460,7 @@ int main() {
         // ----------
         // Tela de Powerup
         // ----------
-        if (globs.canga.xp >= 15) {
+        if (globs.canga.powerup_pronto) {
             desenhar_mapa(sprites);
             desenhar_powerups(powers_temp, fonte);
 
@@ -466,17 +468,17 @@ int main() {
                 switch (evento.keyboard.keycode) {
                 case ALLEGRO_KEY_1:
                     aplicar_power(&globs.canga, powers_temp[0]);
-                    globs.canga.xp = 0;
+                    globs.canga.powerup_pronto = false;
                     break;
 
                 case ALLEGRO_KEY_2:
                     aplicar_power(&globs.canga, powers_temp[1]);
-                    globs.canga.xp = 0;
+                    globs.canga.powerup_pronto = false;
                     break;
 
                 case ALLEGRO_KEY_3:
                     aplicar_power(&globs.canga, powers_temp[2]);
-                    globs.canga.xp = 0;
+                    globs.canga.powerup_pronto = false;
                     break;
                 }
             }

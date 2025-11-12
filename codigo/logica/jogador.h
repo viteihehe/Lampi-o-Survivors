@@ -25,6 +25,8 @@ typedef struct {
     int cooldown_arma;
     long tempo_ultimo_disparo;
 
+    bool powerup_pronto;
+
     int vida;
     int dano_delay;
     int dano;
@@ -33,7 +35,6 @@ typedef struct {
     int ultimo_dano;
 
     Som sons;
-    int xp;
 } Jogador;
 
 typedef struct {

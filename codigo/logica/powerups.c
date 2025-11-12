@@ -20,6 +20,16 @@ void desenhar_powerups(EPowerUps powers[3], ALLEGRO_FONT *fonte) {
         0, 0, LARGURA, ALTURA, al_map_rgba(20, 20, 20, 150)
     );
 
+    desenhar_caixa_texto(
+        "Escolha uma melhoria",
+        COR_BRANCO,
+        LARGURA / 2,
+        ALTURA / 5,
+        400,
+        70,
+        fonte
+    );
+
     for (int i = 0; i < 3; i++) {
         char desc[100] = "";
 
