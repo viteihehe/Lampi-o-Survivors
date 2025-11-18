@@ -550,15 +550,13 @@ int main() {
                 globs.homem_tatus,
                 &globs.indice_tatu,
                 globs.canga,
-                &globs.counts,
-                globs.sprites.cuspe
+                &globs.counts
             );
             inimigosLogica(
                 globs.formigas,
                 &globs.indice_formiga,
                 globs.canga,
-                &globs.counts,
-                globs.sprites.cuspe
+                &globs.counts
             );
             processamentoBala(
                 globs.homem_tatus,

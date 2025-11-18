@@ -146,13 +146,9 @@ void criarInimigo(
 }
 
 void inimigosLogica(
-    Inimigo inimigos[],
-    int *indice,
-    Jogador canga,
-    double *counts,
-    ALLEGRO_BITMAP *cuspe
+    Inimigo inimigos[], int *indice, Jogador canga, double *counts
 ) {
-    const int disparo_cooldown = 2;
+
     int colisao = 0;
     /*
         O tatu tem um movimento fixo seguindo as coordenadas dos players, se não
@@ -235,44 +231,6 @@ void inimigosLogica(
                     inimigos[i].posx = x;
                     inimigos[i].posy = y;
                 }
-
-                if (*counts - inimigos[i].ultimo_ataque >= disparo_cooldown &&
-                    inimigos[i].quantidade_de_ataques < 2000) {
-
-                    Bala tempBala = {
-                        cuspe,
-                        (int)(inimigos[i].posx),
-                        (int)(inimigos[i].posy),
-                        {false, false, false, false},
-                        true,
-                        1
-                    };
-
-                    inimigos[i].balas = realloc(
-                        inimigos[i].balas,
-                        sizeof(Bala) * (inimigos[i].quantidade_de_ataques + 1)
-                    );
-
-                    inimigos[i].balas[inimigos[i].quantidade_de_ataques] =
-                        tempBala;
-
-                    Bala *bala_formiga =
-                        &inimigos[i].balas[inimigos[i].quantidade_de_ataques];
-
-                    if (canga.x < inimigos[i].posx - 48) {
-                        bala_formiga->direcoes.esq = true;
-                    } else if (canga.x > inimigos[i].posx + 48) {
-                        bala_formiga->direcoes.dir = true;
-                    }
-                    if (canga.y > inimigos[i].posy - 48) {
-                        bala_formiga->direcoes.baixo = true;
-                    } else if (canga.y < inimigos[i].posy + 48) {
-                        bala_formiga->direcoes.cima = true;
-                    }
-                    inimigos[i].ultimo_ataque = *counts;
-                    inimigos[i].quantidade_de_ataques++;
-                }
-                logicaBalaFormiga(&inimigos[i]);
             }
         }
     }
@@ -378,8 +336,6 @@ void reajusteInimigos(Inimigo inimigos[], int *indice) {
     for (int i = 0; i < *indice; i++) {
         if (inimigos[i].ativo) {
             inimigos[vivos++] = inimigos[i];
-        } else {
-            free(inimigos[i].balas);
         }
     }
     *indice = vivos;
@@ -406,66 +362,6 @@ void desenharInimigo(Inimigo inimigos[], int indice, Jogador canga) {
                 inimigos[i].posy - inimigos[i].tamanho_sprite / 2.0,
                 flip
             );
-
-            if (inimigos[i].balas != NULL) {
-                Bala *formiga_bala = inimigos[i].balas;
-                if (inimigos[i].comportamento == FORMIGA) {
-                    for (int j = 0; j < inimigos[i].quantidade_de_ataques;
-                         j++) {
-                        if (formiga_bala[j].ativa) {
-                            al_draw_bitmap(
-                                formiga_bala[j].sprite,
-                                formiga_bala[j].x - 8,
-                                formiga_bala[j].y - 8,
-                                0
-                            );
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-void logicaBalaFormiga(Inimigo *inimigo) {
-    int velocidade_bala = 2;
-    for (int i = 0; i < inimigo->quantidade_de_ataques; i++) {
-        if (inimigo->balas[i].ativa) {
-
-            if (inimigo->balas[i].direcoes.cima) {
-                if (inimigo->balas[i].direcoes.dir) {
-                    inimigo->balas[i].y -= velocidade_bala / 2;
-                    inimigo->balas[i].x += velocidade_bala / 2;
-                } else if (inimigo->balas[i].direcoes.esq) {
-                    inimigo->balas[i].y -= velocidade_bala / 2;
-                    inimigo->balas[i].x -= velocidade_bala / 2;
-                } else {
-                    inimigo->balas[i].y -= velocidade_bala;
-                }
-            } else if (inimigo->balas[i].direcoes.baixo) {
-                if (inimigo->balas[i].direcoes.dir) {
-                    inimigo->balas[i].y += velocidade_bala / 2;
-                    inimigo->balas[i].x += velocidade_bala / 2;
-                } else if (inimigo->balas[i].direcoes.esq) {
-                    inimigo->balas[i].y += velocidade_bala / 2;
-                    inimigo->balas[i].x -= velocidade_bala / 2;
-                } else {
-                    inimigo->balas[i].y += velocidade_bala;
-                }
-            } else {
-                if (inimigo->balas[i].direcoes.dir) {
-                    inimigo->balas[i].x += velocidade_bala;
-                } else if (inimigo->balas[i].direcoes.esq) {
-                    inimigo->balas[i].x -= velocidade_bala;
-                }
-            }
-        }
-        if (colide_no_cenario(inimigo->balas[i].x, inimigo->balas[i].y, 12)) {
-            inimigo->balas[i].ativa = 0;
-        }
-        if (inimigo->balas[i].x < 0 || inimigo->balas[i].x > LARGURA ||
-            inimigo->balas[i].y < 0 || inimigo->balas[i].y > ALTURA) {
-            inimigo->balas[i].ativa = false;
         }
     }
 }
@@ -485,22 +381,6 @@ void danoJogador(
                 canga->vida -= 1;
                 canga->ultimo_dano = counts;
                 al_play_sample(som.hit, 2, 0, 1, ALLEGRO_PLAYMODE_ONCE, 0);
-            }
-        }
-        if (inimigos[i].comportamento == FORMIGA) {
-            for (int j = 0; j < inimigos[i].quantidade_de_ataques; j++) {
-                if (!inimigos[i].balas[j].ativa) {
-                    continue;
-                }
-
-                if (abs(inimigos[i].balas[j].x - canga->x) < 25 &&
-                    abs(inimigos[i].balas[j].y - canga->y) < 25 &&
-                    counts - canga->ultimo_dano >= canga->dano_delay) {
-                    canga->vida -= 1;
-                    canga->ultimo_dano = counts;
-                    inimigos[i].balas[j].ativa = false;
-                    al_play_sample(som.hit, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, 0);
-                }
             }
         }
     }

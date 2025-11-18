@@ -23,8 +23,6 @@ typedef struct {
     bool ativo;
     int total_frames;
     int frame_atual;
-    Bala *balas;
-    int quantidade_de_ataques;
     int tamanho_sprite;
     int vida_max;
     int contador_frames;
@@ -50,8 +48,7 @@ void inimigosLogica(
     Inimigo inimigos[],
     int *indice,
     Jogador canga,
-    double *counts,
-    ALLEGRO_BITMAP *cuspe
+    double *counts
 );
 
 void colisaoInimigos(
@@ -76,8 +73,6 @@ void processamentoBala(
 void reajusteInimigos(Inimigo inimigos[], int *indice);
 
 void desenharInimigo(Inimigo inimigos[], int indice, Jogador canga);
-
-void logicaBalaFormiga(Inimigo *inimigo);
 
 void danoJogador(
     Inimigo inimigos[], Jogador *canga, int indice, double counts, Som som
