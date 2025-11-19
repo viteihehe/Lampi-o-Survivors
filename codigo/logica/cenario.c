@@ -156,7 +156,7 @@ int colide_no_cenario(int x, int y, int tam_box) {
     Calcula a coordenada X e Y absoluta e centralizada de um bloco Xb e Yb.
 
     Exemplo:
-        pegar_coord(1, 2) -> {48, 96}
+        pegar_coord(1, 2) -> {66, 120}
 */
 CoordMapa pegar_coord_centro_bloco(int x_bloco, int y_bloco) {
     return (CoordMapa){
