@@ -70,7 +70,7 @@ void criarInimigo(
             .vida = 120,
             .vida_max = 120,
             .dano = 1,
-            .velocidade = 2,
+            .velocidade = 1,
             .ativo = true,
             .contador_frames = 0,
         };
@@ -87,7 +87,7 @@ void criarInimigo(
             .vida = 65,
             .vida_max = 65,
             .dano = 1,
-            .velocidade = 1,
+            .velocidade = 2,
             .ativo = true,
         };
     }
