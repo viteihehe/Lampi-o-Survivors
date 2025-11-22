@@ -12,7 +12,6 @@ typedef enum {
 
 typedef struct {
     EComportamento comportamento;
-    int tamanho_box;
     int ultimo_ataque;
     int posx;
     int posy;

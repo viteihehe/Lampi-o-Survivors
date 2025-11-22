@@ -62,7 +62,6 @@ void criarInimigo(
     if (comportamento == TATU) {
         inimigo_atual = (Inimigo){
             .comportamento = TATU,
-            .tamanho_box = 20,
 
             .sprite = sprites.tatu,
             .tamanho_sprite = 64,
@@ -71,7 +70,7 @@ void criarInimigo(
             .vida = 120,
             .vida_max = 120,
             .dano = 1,
-            .velocidade = 1,
+            .velocidade = 2,
             .ativo = true,
             .contador_frames = 0,
         };
@@ -80,7 +79,6 @@ void criarInimigo(
     else if (comportamento == FORMIGA) {
         inimigo_atual = (Inimigo){
             .comportamento = FORMIGA,
-            .tamanho_box = 20,
 
             .sprite = sprites.formiga,
             .tamanho_sprite = 48,
@@ -89,7 +87,7 @@ void criarInimigo(
             .vida = 65,
             .vida_max = 65,
             .dano = 1,
-            .velocidade = 0.3,
+            .velocidade = 1,
             .ativo = true,
         };
     }
@@ -108,99 +106,52 @@ void criarInimigo(
 void inimigosLogica(
     Inimigo inimigos[], int *indice, Jogador canga, double *counts
 ) {
-
-    int colisao = 0;
-    /*
-        O tatu tem um movimento fixo seguindo as coordenadas dos players, se não
-       estiver colidindo de uma parede.
-    */
-    for (int i = 0; i < *indice; i++) {
-        if (inimigos[i].comportamento == TATU) {
-            colisao = 28;
-            if (!inimigos[i].ativo)
-                continue;
-            int x_futuro = inimigos[i].posx;
-            int y_futuro = inimigos[i].posy;
-
-            if (inimigos[i].posx < canga.x) {
-                x_futuro += inimigos[i].velocidade;
-            }
-            if (inimigos[i].posy < canga.y) {
-                y_futuro += inimigos[i].velocidade;
-            }
-            if (inimigos[i].posx > canga.x) {
-                x_futuro -= inimigos[i].velocidade;
-            }
-            if (inimigos[i].posy > canga.y) {
-                y_futuro -= inimigos[i].velocidade;
-            }
-            if (!colide_no_cenario(x_futuro, y_futuro, 22)) {
-                inimigos[i].posx = x_futuro;
-                inimigos[i].posy = y_futuro;
-            }
-            // if (!colide_no_cenario((int)x_futuro, (int)inimigos[i].posy, 64))
-            // {
-            //     inimigos[i].posx = x_futuro;
-            // }
-            // if (!colide_no_cenario((int)inimigos[i].posx, (int)y_futuro, 64))
-            // {
-            //     inimigos[i].posy = y_futuro;
-            // }
-        }
-
-        if (inimigos[i].comportamento == FORMIGA) {
-            colisao = 22;
-            /*
-                A formiga se aproxima do jogador até determinado ponto,
-                e foge caso o jogador tente se aproximar.
-           */
-            if (inimigos[i].ativo) {
-                float x = inimigos[i].posx;
-                float y = inimigos[i].posy;
-                int distancia = 100;
-
-                // aproximação segura
-                if (x < canga.x - distancia) {
-                    inimigos[i].posx += inimigos[i].velocidade;
-                } else if (x > canga.x + distancia) {
-                    inimigos[i].posx -= inimigos[i].velocidade;
-                }
-                if (y < canga.y - distancia) {
-                    inimigos[i].posy += inimigos[i].velocidade;
-                } else if (y > canga.y + distancia) {
-                    inimigos[i].posy -= inimigos[i].velocidade;
-                }
-                // fuga
-                float dx = canga.x - x;
-                float dy = canga.y - y;
-                if (fabs(dx) < distancia) {
-                    if (dx > 0) {
-                        inimigos[i].posx -= inimigos[i].velocidade;
-                    } else {
-                        inimigos[i].posx += inimigos[i].velocidade;
-                    }
-                }
-                if (fabs(dy) < distancia) {
-                    if (dy > 0) {
-                        inimigos[i].posy -= inimigos[i].velocidade;
-                    } else {
-                        inimigos[i].posy += inimigos[i].velocidade;
-                    }
-                }
-                if (colide_no_cenario(x, y, 40)) {
-                    inimigos[i].posx = x;
-                    inimigos[i].posy = y;
-                }
-            }
-        }
-    }
-
-    // Isso tá conseguindo chegar como NULL aqui. Não deveria
     if (inimigos == NULL) {
         return;
     }
 
-    colisaoInimigos(inimigos, indice, colisao, inimigos->tamanho_sprite);
+    for (int i = 0; i < *indice; i++) {
+        int x_futuro = inimigos[i].posx;
+        int y_futuro = inimigos[i].posy;
+
+        if (inimigos[i].posx < canga.x) {
+            x_futuro += inimigos[i].velocidade;
+        }
+
+        if (inimigos[i].posx > canga.x) {
+            x_futuro -= inimigos[i].velocidade;
+        }
+
+        if (inimigos[i].posy < canga.y) {
+            y_futuro += inimigos[i].velocidade;
+        }
+
+        if (inimigos[i].posy > canga.y) {
+            y_futuro -= inimigos[i].velocidade;
+        }
+
+        if (inimigos[i].comportamento == FORMIGA) {
+            int distancia = sqrt(
+                pow(canga.x - inimigos[i].posx, 2) +
+                pow(canga.y - inimigos[i].posy, 2)
+            );
+
+            if (distancia < 200) {
+                continue;
+            }
+        }
+
+        // Checando se dá pra mover
+        if (!colide_no_cenario(inimigos[i].posx, y_futuro, TAM_BOX_MAXIMO)) {
+            inimigos[i].posy = y_futuro;
+        }
+
+        if (!colide_no_cenario(x_futuro, inimigos[i].posy, TAM_BOX_MAXIMO)) {
+            inimigos[i].posx = x_futuro;
+        }
+    }
+
+    colisaoInimigos(inimigos, indice, TAM_BOX_MAXIMO, inimigos->tamanho_sprite);
 }
 
 void colisaoInimigos(
@@ -332,16 +283,15 @@ void danoJogador(
     for (int i = 0; i < indice; i++) {
         if (!inimigos[i].ativo)
             continue;
-        if (inimigos[i].comportamento == TATU) {
-            int colisaox = 40;
-            int colisaoy = 40;
-            if ((abs(inimigos[i].posx - canga->x) < colisaox) &&
-                (abs(inimigos[i].posy - canga->y) < colisaoy) &&
-                counts - canga->ultimo_dano >= canga->dano_delay) {
-                canga->vida -= 1;
-                canga->ultimo_dano = counts;
-                al_play_sample(som.hit, 2, 0, 1, ALLEGRO_PLAYMODE_ONCE, 0);
-            }
+
+        int colisaox = 40;
+        int colisaoy = 40;
+        if ((abs(inimigos[i].posx - canga->x) < colisaox) &&
+            (abs(inimigos[i].posy - canga->y) < colisaoy) &&
+            counts - canga->ultimo_dano >= canga->dano_delay) {
+            canga->vida -= 1;
+            canga->ultimo_dano = counts;
+            al_play_sample(som.hit, 2, 0, 1, ALLEGRO_PLAYMODE_ONCE, 0);
         }
     }
 
