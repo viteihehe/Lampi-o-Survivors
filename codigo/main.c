@@ -66,7 +66,7 @@ EstadoGlobal gerar_estado(FolhaSprites sprites, Som sons) {
         .x = LARGURA / 2,
         .y = ALTURA / 2,
 
-        .vida = 3,
+        .vida = 0,
         .vivo = true,
         .cooldown_arma = 60,
         .dano_delay = 2,
@@ -335,7 +335,8 @@ int main() {
     int botao_menu_selecionado = 0;
     char letra = 'A';
     int aux = 0;
-    int temp = 10;
+    bool primeiro_reset = true;
+    int tempo = 10;
     char sigla[4] = {'_', '_', '_', '\0'};
     bool selecionou = false;
     bool gravar = true;
@@ -440,20 +441,23 @@ int main() {
         // Tela de Game Over
         // ----------
         if (!globs.canga.vivo) {
-            if(temp > 0) {
-                letra = 'A';
-                aux = 0;
-                selecionou = false;
-            }
-            temp--;
+          if(tempo > 0) {
+            letra = 'A';
+            aux = 0;
+            selecionou = false;
+          }
+          if(tempo != 0) {
+            tempo--;
+          }
             desenhar_mapa(sprites);
             al_set_audio_stream_playing(jogo_sons.musica_de_fundo, false);
             al_set_audio_stream_playing(jogo_sons.musica_derrota, true);
 
             if (gravar) {
+                exibir_lista(fonte, fonte_titulo);  
                 tela_morte(evento, globs.canga.pontuacao, fonte_titulo, fonte,
                 sigla, &letra, &aux, &selecionou, jogo_sons.escolha, jogo_sons.selecao);
-                exibir_lista(fonte, fonte_titulo);
+                  
                 if (aux == 3) {
                     salvar_arquivo(globs.canga.pontuacao, sigla);
                     gravar = false;
@@ -481,7 +485,7 @@ int main() {
                 sigla[3] = '\0';
                 selecionou = false;
                 gravar = true;
-                temp = 10;
+                tempo = 10;
             }
 
             al_flip_display();
@@ -490,14 +494,17 @@ int main() {
 
         if(usuario_na_pontuacao) {
             char sigla_busca [4];
-            if(temp > 0) {
+            if(tempo > 0) {
                 aux = 0;
                 selecionou = false;
                 letra = 'A';
                 evento.keyboard.keycode = 0;
                 strcpy(sigla_busca, "___");
+                primeiro_reset = false;
             }
-            temp--;
+            if(tempo != 0) {
+            tempo--;
+            }
             al_set_audio_stream_playing(jogo_sons.musica_de_fundo, false);
             al_set_audio_stream_playing(jogo_sons.musica_derrota, false);
 
@@ -510,7 +517,7 @@ int main() {
             if(evento.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
                 usuario_no_menu = true;
                 usuario_na_pontuacao = false;
-                temp = 10;
+                tempo = 10;
             }
             continue;
         }
@@ -606,6 +613,7 @@ int main() {
             mover_balas(&globs.canga.balas);
             desenhar_vida_jogador(&globs.canga, globs.sprites);
             desenhar_vida_inimigos(globs.inimigos, globs.quant_inim);
+            desenhar_pontuacao(globs.canga.pontuacao, fonte);
 
             if (globs.delay_mensagem > 0) {
                 char mensagem_wave[30];

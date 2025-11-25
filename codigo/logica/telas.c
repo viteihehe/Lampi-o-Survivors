@@ -108,7 +108,7 @@ void tela_morte(
     ALLEGRO_SAMPLE *escolha,
     ALLEGRO_SAMPLE *selecao
 ) {
-    al_draw_filled_rectangle(170, -10, 830, 800, COR_PRETO);
+    
     desenhar_caixa_texto(
         "PONTUAÇÕES", COR_BRANCO, 500, 70, 580, 80, fonte_titulo
     );
