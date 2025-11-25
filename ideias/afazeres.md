@@ -18,4 +18,4 @@
 - [ ] Fazer as balas da formiga irem na direção do jogador
 - [ ] Mini lore antes de começar o jogo (Em análise)
 - [X] Tela de morte e pontuação salva em arquivo (Falta embelezar) (ARQUIVO E ORDENAÇÃO);
-- [ ] Criação de busca de maior score de uma determinada sigla *IMPORTANTE
+- [X] Criação de busca de maior score de uma determinada sigla *IMPORTANTE
