@@ -2,6 +2,7 @@
 #include "../constantes.h"
 #include "cenario.h"
 #include <allegro5/allegro_primitives.h>
+#include <allegro5/bitmap_draw.h>
 
 /*
     Uma função cujo propósito é atualizar o estado das teclas WASD do jogador.
@@ -145,10 +146,7 @@ void mover_jogador(MapaDirecoes teclas, Jogador *jogador) {
    argumento `dest_quant`.
 */
 void criar_bala_jogador(
-    Jogador *jogador,
-    ALLEGRO_TIMER *tick_timer,
-    FolhaSprites sprites,
-    Som som
+    Jogador *jogador, ALLEGRO_TIMER *tick_timer, FolhaSprites sprites, Som som
 ) {
     // O jogador tem que estar mirando em alguma direção
     if (!(jogador->mira.cima || jogador->mira.baixo || jogador->mira.esq ||
@@ -189,38 +187,33 @@ void criar_bala_jogador(
     TODO: Mover a parte de redesenhar para uma função dedicada;
 */
 void mover_balas(Lista *lista) {
-    No * temp = lista->inicio;
+    No *temp = lista->inicio;
 
-    while(temp != NULL) {
+    while (temp != NULL) {
         Bala *b = &temp->dado;
-        if(!b->ativa) {
+        if (!b->ativa) {
             temp = temp->prox;
             continue;
         }
 
-        if(b->direcoes.cima)
+        if (b->direcoes.cima)
             b->y -= VEL_BALA;
-        if(b->direcoes.baixo)
+        if (b->direcoes.baixo)
             b->y += VEL_BALA;
-        if(b->direcoes.dir)
+        if (b->direcoes.dir)
             b->x += VEL_BALA;
-        if(b->direcoes.esq)
+        if (b->direcoes.esq)
             b->x -= VEL_BALA;
 
-         if (colide_no_cenario(b->x, b->y, 12)) {
+        if (colide_no_cenario(b->x, b->y, 12)) {
             b->ativa = false;
             return;
         }
 
-        al_draw_bitmap(
-            b->sprite,
-            b->x - 8,
-            b->y - 8,
-            ALLEGRO_FLIP_HORIZONTAL
-        );
+        al_draw_bitmap(b->sprite, b->x - 8, b->y - 8, ALLEGRO_FLIP_HORIZONTAL);
 
         temp = temp->prox;
-    }    
+    }
 }
 
 /*
@@ -238,64 +231,73 @@ void frames_canga(ALLEGRO_BITMAP *pernas, Jogador *canga) {
     int delay = 10;
     canga->contador_frame++;
 
-    if(canga->contador_frame > delay) {
+    if (canga->contador_frame > delay) {
         canga->frame_pernas++;
 
-         if(canga->frame_pernas >= 3) {
-        canga->frame_pernas = 1;
+        if (canga->frame_pernas >= 3) {
+            canga->frame_pernas = 1;
         }
         canga->contador_frame = 1;
     }
-   
-    
 }
 
 void desenhar_jogador(Jogador *canga, ALLEGRO_BITMAP *pernas) {
-    int png_x_pernas = 25*canga->frame_pernas;
-    int png_x = 64;
-    int png_y = 0;
     frames_canga(pernas, canga);
-    if(canga->mira.baixo) {
-        al_draw_bitmap_region(canga->sprite, png_x*2, png_y, 64, 64, canga->x-32, canga->y-32, 0
-        );
-       
-    }else if(canga->mira.cima) {
-         al_draw_bitmap_region(canga->sprite, png_x*3, png_y, 64, 64, canga->x-33, canga->y-32, 0
-        );
-    }else if(canga->mira.dir) {
-        al_draw_bitmap_region(canga->sprite, png_x*0, png_y, 64, 64, canga->x-32, canga->y-32, 0
-        );
-    }else if(canga->mira.esq) {
-        al_draw_bitmap_region(canga->sprite, png_x*1, png_y, 64, 64, canga->x-32, canga->y-32, 0
-        );
-    }else {
-        al_draw_bitmap_region(canga->sprite, png_x*2, png_y, 64, 64, canga->x-32, canga->y-32, 0
-        );
-        
-    }
-    if((canga->movimento.cima || canga->movimento.baixo  || canga->movimento.esq || canga->movimento.dir) && canga->mira.dir ) {
-       
-        al_draw_bitmap_region(pernas, png_x_pernas, 0, 24, 13, canga->x-10, canga->y+22, 0);
-    }else if(canga->mira.dir){
-         al_draw_bitmap_region(pernas, 0, 0, 24, 13, canga->x-12, canga->y+22, 0);
 
-    
-    }else if((canga->movimento.cima || canga->movimento.baixo  || canga->movimento.esq || canga->movimento.dir) && canga->mira.cima ) { 
-        al_draw_bitmap_region(pernas, png_x_pernas, 0, 24, 13, canga->x-9, canga->y+22, 0);
-
-
-    }else if(canga->mira.cima){
-        al_draw_bitmap_region(pernas, 0, 0, 24, 13, canga->x-10, canga->y+22, 0);
-
-    }else if((canga->movimento.cima || canga->movimento.baixo  || canga->movimento.esq || canga->movimento.dir) && canga->mira.esq){  
-          al_draw_bitmap_region(pernas, png_x_pernas, 0, 24, 13, canga->x-10, canga->y+22, 0);
-    }else if(canga->mira.esq) {
-        al_draw_bitmap_region(pernas, 0, 0, 24, 13, canga->x-11, canga->y+22, 0);
-    }else if(canga->movimento.cima || canga->movimento.baixo  || canga->movimento.esq || canga->movimento.dir) {
-        al_draw_bitmap_region(pernas, png_x_pernas, 0, 24, 13, canga->x-9, canga->y+22, 0);
-         
-    }else {
-        al_draw_bitmap_region(pernas, 0, 0, 24, 13, canga->x-10, canga->y+22, 0);
+    // ----------
+    // Corpo
+    // ----------
+    if (canga->mira.dir) {
+        al_draw_bitmap_region(
+            canga->sprite, 64 * 0, 0, 64, 64, canga->x - 32, canga->y - 32, 0
+        );
     }
 
+    else if (canga->mira.esq) {
+        al_draw_bitmap_region(
+            canga->sprite, 64 * 1, 0, 64, 64, canga->x - 32, canga->y - 32, 0
+        );
+    }
+
+    else if (canga->mira.baixo) {
+        al_draw_bitmap_region(
+            canga->sprite, 64 * 2, 0, 64, 64, canga->x - 32, canga->y - 32, 0
+        );
+    }
+
+    else if (canga->mira.cima) {
+        al_draw_bitmap_region(
+            canga->sprite, 64 * 3, 0, 64, 64, canga->x - 32, canga->y - 32, 0
+        );
+    }
+
+    else {
+        // Daria para colocar um "não está mirando em nada" aqui
+        al_draw_bitmap_region(
+            canga->sprite, 64 * 2, 0, 64, 64, canga->x - 32, canga->y - 32, 0
+        );
+    }
+
+    // ----------
+    // Pernas
+    // ----------
+    if (canga->movimento.cima || canga->movimento.baixo ||
+        canga->movimento.esq || canga->movimento.dir) {
+        al_draw_bitmap_region(
+            pernas,
+            64 * canga->frame_pernas,
+            0,
+            64,
+            64,
+            canga->x - 32,
+            canga->y - 32,
+            0
+        );
+    }
+
+    else {
+        al_draw_bitmap_region(
+            pernas, 0, 0, 64, 64, canga->x - 32, canga->y - 32, 0
+        );
+    }
 }
