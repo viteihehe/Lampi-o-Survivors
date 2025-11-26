@@ -274,7 +274,7 @@ void desenhar_jogador(Jogador *canga, ALLEGRO_BITMAP *pernas) {
     else {
         // Daria para colocar um "não está mirando em nada" aqui
         al_draw_bitmap_region(
-            canga->sprite, 64 * 2, 0, 64, 64, canga->x - 32, canga->y - 32, 0
+            canga->sprite, 64 * 4, 0, 64, 64, canga->x - 32, canga->y - 32, 0
         );
     }
 
