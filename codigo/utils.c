@@ -2,6 +2,7 @@
 #include "constantes.h"
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_primitives.h>
+#include <stdbool.h>
 
 /*
     Desenha uma caixa de texto centralizada em (X, Y). Tamanho de fonte
@@ -53,4 +54,17 @@ void ciclar_inteiro(int *indice, int min, int max, int incremento) {
     if (*indice > max) {
         *indice = min;
     }
+}
+
+/*
+    Checa se um inteiro está num vetor de inteiros.
+*/
+bool inteiro_no_vetor(int desejado, int *vetor, int tam_vetor) {
+    for (int i = 0; i < tam_vetor; i++) {
+        if (vetor[i] == desejado) {
+            return true;
+        }
+    }
+
+    return false;
 }

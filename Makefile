@@ -22,6 +22,10 @@ dev: ${CODIGOS}
 	@rm ${SAIDA}
 
 
+debug:
+	gcc ${CODIGOS} ${ALLEGRO} -lm -g -Wall -o ${SAIDA}
+
+
 tar: ${CODIGOS}
 	gcc ${CODIGOS} ${ALLEGRO} -o ${SAIDA}
 	tar -czf CangasLinux.tar.gz \

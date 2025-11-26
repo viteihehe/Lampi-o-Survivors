@@ -49,6 +49,10 @@ void desenhar_powerups(EPowerUps powers[3], ALLEGRO_FONT *fonte) {
             strcat(desc, "Velocidade +10%");
             break;
 
+        case RESTAURAR_VIDA:
+            strcat(desc, "Restaurar Vidas");
+            break;
+
         default:
             strcat(desc, "<POWERUP DESCONHECIDO>");
             break;
@@ -93,5 +97,24 @@ void aplicar_power(Jogador *canga, EPowerUps power) {
     case AUMENTO_VDM:
         canga->velocidade *= 1.10;
         break;
+
+    case RESTAURAR_VIDA:
+        canga->vida = 3;
+        break;
+    }
+}
+
+/*
+    Embaralha os powerups na tela de seleção.
+*/
+void aleatorizar_powers(EPowerUps *powers) {
+    powers[0] = rand() % QUANT_POWERS;
+
+    while (powers[1] == powers[0]) {
+        powers[1] = rand() % QUANT_POWERS;
+    }
+
+    while (powers[2] == powers[0] || powers[2] == powers[1]) {
+        powers[2] = rand() % QUANT_POWERS;
     }
 }

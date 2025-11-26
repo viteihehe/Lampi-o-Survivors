@@ -12,3 +12,5 @@ void desenhar_caixa_texto(
 );
 
 void ciclar_inteiro(int *indice, int min, int max, int incremento);
+
+bool inteiro_no_vetor(int desejado, int *vetor, int tam_vetor);

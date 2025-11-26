@@ -121,10 +121,11 @@ void reiniciar_inimigos(EstadoGlobal *globs) {
     globs->inimigos = NULL;
 }
 
-void waves(EstadoGlobal *globs) {
+void waves(EstadoGlobal *globs, EPowerUps *powers) {
     if (globs->wave_ativa &&
         globs->inimigos_mortos >= globs->total_inimigos_wave) {
 
+        aleatorizar_powers(powers);
         globs->canga.powerup_pronto = true;
         globs->wave_ativa = false;
         globs->ultima_wave = al_get_time();
@@ -349,8 +350,7 @@ int main() {
     bool selecionou = false;
     bool gravar = true;
 
-    // TODO: Deixar aleatório quando tiver mais do que 3
-    EPowerUps powers_temp[3] = {AUMENTO_DANO, AUMENTO_VDA, AUMENTO_VDM};
+    EPowerUps *powers = malloc(sizeof(EPowerUps) * 3);
 
     ALLEGRO_EVENT evento;
     for (;;) {
@@ -551,24 +551,24 @@ int main() {
         // ----------
         if (globs.canga.powerup_pronto) {
             desenhar_mapa(sprites);
-            desenhar_powerups(powers_temp, fonte);
+            desenhar_powerups(powers, fonte);
 
             if (evento.type == ALLEGRO_EVENT_KEY_DOWN) {
                 switch (evento.keyboard.keycode) {
                 case ALLEGRO_KEY_1:
-                    aplicar_power(&globs.canga, powers_temp[0]);
+                    aplicar_power(&globs.canga, powers[0]);
                     globs.canga.powerup_pronto = false;
                     al_flush_event_queue(fila);
                     break;
 
                 case ALLEGRO_KEY_2:
-                    aplicar_power(&globs.canga, powers_temp[1]);
+                    aplicar_power(&globs.canga, powers[1]);
                     globs.canga.powerup_pronto = false;
                     al_flush_event_queue(fila);
                     break;
 
                 case ALLEGRO_KEY_3:
-                    aplicar_power(&globs.canga, powers_temp[2]);
+                    aplicar_power(&globs.canga, powers[2]);
                     globs.canga.powerup_pronto = false;
                     al_flush_event_queue(fila);
                     break;
@@ -636,7 +636,7 @@ int main() {
                 &globs.canga, tick_timer, globs.sprites, globs.sons
             );
 
-            waves(&globs);
+            waves(&globs, powers);
             criar_bala_jogador(
                 &globs.canga, tick_timer, globs.sprites, globs.sons
             );
