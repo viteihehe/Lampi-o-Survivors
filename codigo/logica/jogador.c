@@ -242,7 +242,7 @@ void frames_canga(ALLEGRO_BITMAP *pernas, Jogador *canga) {
         canga->frame_pernas++;
 
          if(canga->frame_pernas >= 3) {
-        canga->frame_pernas = 0;
+        canga->frame_pernas = 1;
         }
         canga->contador_frame = 1;
     }
@@ -260,7 +260,7 @@ void desenhar_jogador(Jogador *canga, ALLEGRO_BITMAP *pernas) {
         );
        
     }else if(canga->mira.cima) {
-         al_draw_bitmap_region(canga->sprite, png_x*3, png_y, 64, 64, canga->x-32, canga->y-32, 0
+         al_draw_bitmap_region(canga->sprite, png_x*3, png_y, 64, 64, canga->x-33, canga->y-32, 0
         );
     }else if(canga->mira.dir) {
         al_draw_bitmap_region(canga->sprite, png_x*0, png_y, 64, 64, canga->x-32, canga->y-32, 0
@@ -275,16 +275,27 @@ void desenhar_jogador(Jogador *canga, ALLEGRO_BITMAP *pernas) {
     }
     if((canga->movimento.cima || canga->movimento.baixo  || canga->movimento.esq || canga->movimento.dir) && canga->mira.dir ) {
        
-        al_draw_bitmap_region(pernas, png_x_pernas, 0, 25, 13, canga->x-11, canga->y+21, 0);
+        al_draw_bitmap_region(pernas, png_x_pernas, 0, 24, 13, canga->x-10, canga->y+22, 0);
     }else if(canga->mira.dir){
-         al_draw_bitmap_region(pernas, 0, 0, 26, 13, canga->x-12, canga->y+21, 0);
+         al_draw_bitmap_region(pernas, 0, 0, 24, 13, canga->x-12, canga->y+22, 0);
 
     
+    }else if((canga->movimento.cima || canga->movimento.baixo  || canga->movimento.esq || canga->movimento.dir) && canga->mira.cima ) { 
+        al_draw_bitmap_region(pernas, png_x_pernas, 0, 24, 13, canga->x-9, canga->y+22, 0);
+
+
+    }else if(canga->mira.cima){
+        al_draw_bitmap_region(pernas, 0, 0, 24, 13, canga->x-10, canga->y+22, 0);
+
+    }else if((canga->movimento.cima || canga->movimento.baixo  || canga->movimento.esq || canga->movimento.dir) && canga->mira.esq){  
+          al_draw_bitmap_region(pernas, png_x_pernas, 0, 24, 13, canga->x-10, canga->y+22, 0);
+    }else if(canga->mira.esq) {
+        al_draw_bitmap_region(pernas, 0, 0, 24, 13, canga->x-11, canga->y+22, 0);
     }else if(canga->movimento.cima || canga->movimento.baixo  || canga->movimento.esq || canga->movimento.dir) {
-        al_draw_bitmap_region(pernas, png_x_pernas, 0, 25, 13, canga->x-10, canga->y+22, 0);
+        al_draw_bitmap_region(pernas, png_x_pernas, 0, 24, 13, canga->x-9, canga->y+22, 0);
          
     }else {
-        al_draw_bitmap_region(pernas, 0, 0, 26, 13, canga->x-10, canga->y+22, 0);
+        al_draw_bitmap_region(pernas, 0, 0, 24, 13, canga->x-10, canga->y+22, 0);
     }
 
 }

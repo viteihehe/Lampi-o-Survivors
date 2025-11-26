@@ -66,7 +66,7 @@ EstadoGlobal gerar_estado(FolhaSprites sprites, Som sons) {
         .x = LARGURA / 2,
         .y = ALTURA / 2,
 
-        .vida = 0,
+        .vida = 3,
         .vivo = true,
         .cooldown_arma = 60,
         .dano_delay = 2,
@@ -335,7 +335,6 @@ int main() {
     int botao_menu_selecionado = 0;
     char letra = 'A';
     int aux = 0;
-    bool primeiro_reset = true;
     int tempo = 10;
     char sigla[4] = {'_', '_', '_', '\0'};
     bool selecionou = false;
@@ -500,10 +499,9 @@ int main() {
                 letra = 'A';
                 evento.keyboard.keycode = 0;
                 strcpy(sigla_busca, "___");
-                primeiro_reset = false;
             }
             if(tempo != 0) {
-            tempo--;
+                tempo--;
             }
             al_set_audio_stream_playing(jogo_sons.musica_de_fundo, false);
             al_set_audio_stream_playing(jogo_sons.musica_derrota, false);
