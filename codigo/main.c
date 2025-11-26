@@ -243,6 +243,8 @@ int main() {
     al_register_event_source(fila, al_get_timer_event_source(tick_timer));
     al_start_timer(tick_timer);
 
+    al_hide_mouse_cursor(tela);
+
     // ----------
     // Fontes
     // ----------
