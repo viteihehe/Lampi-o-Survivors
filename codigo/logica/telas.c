@@ -1,9 +1,16 @@
 #include "../constantes.h"
 #include "../utils.h"
 #include "quicksort.h"
+#include "telas.h"
 #include <allegro5/allegro_audio.h>
 #include <allegro5/allegro_primitives.h>
+#include <allegro5/bitmap.h>
+#include <allegro5/bitmap_draw.h>
+#include <allegro5/bitmap_io.h>
+#include <allegro5/allegro_image.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 void desenhar_pontuacao(int pontos, ALLEGRO_FONT *fonte) {
     char pontuacao[30];
@@ -45,23 +52,25 @@ void selecao_letra(
 }
 
 void exibir_escrita_sigla(
-    ALLEGRO_FONT *fonte, int *op, bool *selecionou, char sigla[], char *letra
+    ALLEGRO_FONT *fonte, int *op, bool *selecionou, char sigla[], char *letra, int x, int y, char texto[]
 ) {
-    al_draw_text(
-        fonte, COR_BRANCO, 350, 700, ALLEGRO_ALIGN_CENTRE, "insira sua sigla:"
+    
+    al_draw_textf(
+        fonte, COR_BRANCO, x-150, y, ALLEGRO_ALIGN_CENTRE, "%s", texto 
     );
+    
     switch (*op) {
     case 0:
         al_draw_textf(
-            fonte, COR_BRANCO, 520, 700, ALLEGRO_ALIGN_CENTRE, "%c _ _", *letra
+            fonte, COR_BRANCO, x, y, ALLEGRO_ALIGN_CENTRE, "%c _ _", *letra
         );
         break;
     case 1:
         al_draw_textf(
             fonte,
             COR_BRANCO,
-            520,
-            700,
+            x,
+            y,
             ALLEGRO_ALIGN_CENTRE,
             "%c %c _",
             sigla[0],
@@ -72,8 +81,8 @@ void exibir_escrita_sigla(
         al_draw_textf(
             fonte,
             COR_BRANCO,
-            520,
-            700,
+            x,
+            y,
             ALLEGRO_ALIGN_CENTRE,
             "%c %c %c",
             sigla[0],
@@ -99,23 +108,73 @@ void exibir_escrita_sigla(
 void tela_morte(
     ALLEGRO_EVENT evento,
     int pontos,
-    ALLEGRO_FONT *fonte_titulo,
+    ALLEGRO_FONT *fonte_menor,
     ALLEGRO_FONT *fonte,
+    ALLEGRO_FONT *fonte_frase,
     char sigla[],
     char *letra,
     int *op,
     bool *selecionou,
     ALLEGRO_SAMPLE *escolha,
-    ALLEGRO_SAMPLE *selecao
+    ALLEGRO_SAMPLE *selecao,
+    ALLEGRO_BITMAP *caveira,
+    Estatisticas est
+    
 ) {
+    srand(time(NULL));
+    int escreveu = 0;
+    static int frase_escolhida = -1;
 
-    desenhar_caixa_texto(
-        "PONTUAÇÕES", COR_BRANCO, 500, 70, 580, 80, fonte_titulo
-    );
-    al_draw_rectangle(170, -10, 830, 800, COR_BRANCO, 10);
+    al_clear_to_color(al_map_rgb(152,61,58));
+    
+    al_draw_filled_rectangle(0, 50, 960, 150, al_map_rgb(122, 35, 35));
+    al_draw_filled_ellipse(100, 100, 100, 100, al_map_rgb(103, 30, 30));
+    al_draw_scaled_bitmap(caveira, 0, 0, 64, 64, -28, -5, 260, 260, 0);
+    al_draw_filled_rectangle(50, 250, 395, 600, al_map_rgb(122, 35, 35));
+    al_draw_rectangle(45, 245, 395, 595, COR_BRANCO, 5);
+    al_draw_text(fonte, COR_BRANCO, 120, 260, 0, "Estatisticas:");
+    int x = 310;
+    al_draw_textf(fonte, COR_BRANCO, 70, x, 0, "Pontuação: %d", est.pontuacao_run);
+    al_draw_textf(fonte, COR_BRANCO, 70, x+50, 0, "Passos dados: %d", est.passos_dados);
+    al_draw_textf(fonte, COR_BRANCO, 70, x+100, 0, "Nivel atingido: %d", est.nivel_atingido);
+    al_draw_textf(fonte, COR_BRANCO, 70, x+150, 0, "Dano causado: %d", est.Dano_causado);
+    al_draw_textf(fonte, COR_BRANCO, 70, x+200, 0, "Dano sofrido: %d", est.Dano_sofrido);
+    al_draw_textf(fonte, COR_BRANCO, 70, x+250, 0, "Total de abates: %d", est.total_inimigos_mortos);
+    
+    if(!escreveu) {
+        if(frase_escolhida == -1) {
+            frase_escolhida = (rand() % 4)+1;
+        }
+        if(!escreveu) {
+        switch (frase_escolhida) {
+        case 1:
+        al_draw_text(fonte_frase, COR_BRANCO, 250, 80, 0, "Ei rapaz deixe de safadeza");
+        escreveu = 1;
+            break;
+        case 2:
+        al_draw_text(fonte_frase, COR_BRANCO, 250, 80, 0, "SE LASCOU HAHAHAHAHA");
+        escreveu = 1;
+            break;
+        case 3:
+        al_draw_text(fonte_frase, COR_BRANCO, 250, 80, 0, "GET GOOD!!!");
+        escreveu = 1;
+            break;
+        case 4:
+        al_draw_text(fonte_frase, COR_BRANCO, 250, 80, 0, "Infelizmente aconteceu :(");
+        escreveu = 1;
+            break;
+        default:
+            break;
+        }
+        }
+        escreveu = 1;
+    }
+    
+    desenhar_caixa_texto("Aperte [espaço] para recomeçar", COR_BRANCO, LARGURA/2, 700, 500, 80, fonte);
+    
 
-    al_draw_rectangle(170, 660, 830, 800, COR_BRANCO, 10);
-    exibir_escrita_sigla(fonte, op, selecionou, sigla, letra);
+    exibir_lista(fonte, fonte_frase, 500, 250, 845, 620, 0);
+    exibir_escrita_sigla(fonte_menor, op, selecionou, sigla, letra, 760, 580, "Insira sua sigla:");
     selecao_letra(evento, letra, selecionou, selecao, escolha);
 }
 
@@ -136,15 +195,11 @@ void salvar_arquivo(int pontos, char sigla[]) {
     }
 }
 
-void exibir_lista(ALLEGRO_FONT *fonte, ALLEGRO_FONT *fonte_titulo) {
-
-    al_draw_filled_rectangle(170, -10, 830, 800, COR_PRETO);
-    desenhar_caixa_texto(
-        "PONTUAÇÕES", COR_BRANCO, 500, 70, 580, 80, fonte_titulo
-    );
-    al_draw_rectangle(170, -10, 830, 800, COR_BRANCO, 10);
-
-    al_draw_rectangle(170, 660, 830, 800, COR_BRANCO, 10);
+void exibir_lista(ALLEGRO_FONT *fonte, ALLEGRO_FONT *fonte_titulo, int x1, int y1, int x2, int y2, int tipo) {
+    if(!tipo) {
+        al_draw_filled_rectangle(x1, y1, x2, y2, COR_PRETO);
+    al_draw_text(fonte, COR_BRANCO, x1+130, y1+25, 0, "Rank:");
+    al_draw_rectangle(x1, y1, x2, y2, COR_BRANCO, 10);
 
     char dir[50];
     sprintf(dir, "./materiais/repositorio/pontos.bin");
@@ -169,21 +224,22 @@ void exibir_lista(ALLEGRO_FONT *fonte, ALLEGRO_FONT *fonte_titulo) {
 
         quicksort(0, quantidade - 1, usuarios);
 
-        int posy_inicial = 200;
-        for (int i = 0; i < quantidade && quantidade <= 5; i++) {
+        int posx =  (x1);
+        int posy_inicial = y1+100;
+        for (int i = 0; i < quantidade && quantidade <= 3; i++) {
             if (i == 0) {
                 al_draw_text(
                     fonte,
                     COR_BRANCO,
-                    LARGURA / 2.0 - 300,
+                    posx,
                     posy_inicial - 40,
                     0,
-                    "-------------------------------------------------"
+                    "--------------------------"
                 );
                 al_draw_textf(
                     fonte,
                     COR_BRANCO,
-                    LARGURA / 2.0,
+                    posx+180,
                     posy_inicial,
                     ALLEGRO_ALIGN_CENTER,
                     "%dº %s %d pontos",
@@ -194,16 +250,16 @@ void exibir_lista(ALLEGRO_FONT *fonte, ALLEGRO_FONT *fonte_titulo) {
                 al_draw_text(
                     fonte,
                     COR_BRANCO,
-                    LARGURA / 2.0 - 300,
+                    posx,
                     posy_inicial + 40,
                     0,
-                    "-------------------------------------------------"
+                    "--------------------------"
                 );
             } else {
                 al_draw_textf(
                     fonte,
                     COR_BRANCO,
-                    LARGURA / 2.0,
+                    posx+180,
                     posy_inicial,
                     ALLEGRO_ALIGN_CENTER,
                     "%dº %s %d pontos",
@@ -214,10 +270,96 @@ void exibir_lista(ALLEGRO_FONT *fonte, ALLEGRO_FONT *fonte_titulo) {
                 al_draw_text(
                     fonte,
                     COR_BRANCO,
-                    LARGURA / 2.0 - 300,
+                    posx,
                     posy_inicial + 40,
                     0,
-                    "-------------------------------------------------"
+                    "--------------------------"
+                );
+            }
+            posy_inicial += 80;
+        }
+
+        free(usuarios);
+        }
+    
+    } else {
+        al_draw_filled_rectangle(x1, y1, x2, y2, COR_PRETO);
+    al_draw_text(fonte, COR_BRANCO, x1+300, y1+25, 0, "Rank:");
+    al_draw_rectangle(x1, y1, x2, y2, COR_BRANCO, 10);
+
+    char dir[50];
+    sprintf(dir, "./materiais/repositorio/pontos.bin");
+    FILE *file;
+    file = fopen(dir, "rb");
+    if (file == NULL) {
+        file = fopen(dir, "ab");
+        fclose(file);
+        file = fopen(dir, "rb");
+    }
+
+    fseek(file, 0, SEEK_END);
+    long tam = ftell(file);
+    fseek(file, 0, SEEK_SET);
+    int quantidade = tam / sizeof(Usuarios);
+
+    if (quantidade != 0) {
+        Usuarios *usuarios = (Usuarios *)malloc(quantidade * sizeof(Usuarios));
+
+        fread(usuarios, sizeof(Usuarios), quantidade, file);
+        fclose(file);
+
+        quicksort(0, quantidade - 1, usuarios);
+
+        int posx =  x1+150;
+        int posy_inicial = y1+100;
+        for (int i = 0; i < quantidade && quantidade <= 6; i++) {
+            if (i == 0) {
+                al_draw_text(
+                    fonte,
+                    COR_BRANCO,
+                    posx-150,
+                    posy_inicial - 40,
+                    0,
+                    "---------------------------------------------------"
+                );
+                al_draw_textf(
+                    fonte,
+                    COR_BRANCO,
+                    posx+180,
+                    posy_inicial,
+                    ALLEGRO_ALIGN_CENTER,
+                    "%dº %s %d pontos",
+                    i + 1,
+                    usuarios[i].sigla,
+                    usuarios[i].pontos
+                );
+                al_draw_text(
+                    fonte,
+                    COR_BRANCO,
+                    posx-150,
+                    posy_inicial + 40,
+                    0,
+                    "---------------------------------------------------"
+                );
+            } else {
+                al_draw_textf(
+                    fonte,
+                    COR_BRANCO,
+                    posx+180,
+                    posy_inicial,
+                    ALLEGRO_ALIGN_CENTER,
+                    "%dº %s %d pontos",
+                    i + 1,
+                    usuarios[i].sigla,
+                    usuarios[i].pontos
+                );
+                al_draw_text(
+                    fonte,
+                    COR_BRANCO,
+                    posx-150,
+                    posy_inicial + 40,
+                    0,
+                    "---------------------------------------------------"
                 );
             }
             posy_inicial += 80;
@@ -225,7 +367,9 @@ void exibir_lista(ALLEGRO_FONT *fonte, ALLEGRO_FONT *fonte_titulo) {
 
         free(usuarios);
     }
+    }
 }
+
 
 Usuarios *retorna_score(char sigla[]) {
     char dir[50];
@@ -256,13 +400,15 @@ void busca_pontucao(
     ALLEGRO_SAMPLE *selecao,
     char sigla_busca[]
 ) {
-    al_draw_filled_rectangle(170, -10, 830, 800, COR_PRETO);
-    al_draw_rectangle(170, -10, 830, 800, COR_BRANCO, 10);
+    // al_draw_filled_rectangle(170, -10, 830, 800, COR_PRETO);
+    // al_draw_rectangle(170, -10, 830, 800, COR_BRANCO, 10);
 
-    al_draw_rectangle(170, 660, 830, 800, COR_BRANCO, 10);
+    // al_draw_rectangle(170, 660, 830, 800, COR_BRANCO, 10);
+
+    exibir_lista(fonte, fonte_titulo, 170, 0, 830, 800, 1);
 
     if (*op < 3) {
-        exibir_lista(fonte, fonte_titulo);
+        //exibir_lista(fonte, fonte_titulo);
 
         al_draw_rectangle(
             170, ALTURA / 2.0 + 190, 830, ALTURA / 2.0 + 280, COR_BRANCO, 10
@@ -270,22 +416,18 @@ void busca_pontucao(
         al_draw_text(
             fonte,
             COR_BRANCO,
-            LARGURA / 2.0,
+            LARGURA / 2.0-50,
             ALTURA / 2.0 + 220,
             ALLEGRO_ALIGN_CENTRE,
             "Insira a sigla que deseja buscar:"
         );
-        exibir_escrita_sigla(fonte, op, selecionou, sigla_busca, letra);
+        exibir_escrita_sigla(fonte, op, selecionou, sigla_busca, letra, LARGURA / 2.0+250, ALTURA / 2.0 + 220, " ");
         selecao_letra(evento, letra, selecionou, selecao, escolha);
     }
 
     if (*op >= 3) {
-        al_draw_filled_rectangle(170, -10, 830, 800, COR_PRETO);
-        desenhar_caixa_texto(
-            "PONTUAÇÕES", COR_BRANCO, 500, 70, 580, 80, fonte_titulo
-        );
-        al_draw_rectangle(170, -10, 830, 800, COR_BRANCO, 10);
-
+       
+        al_draw_filled_rectangle(175, 50, 825, 600, COR_PRETO);
         al_draw_rectangle(170, 660, 830, 800, COR_BRANCO, 10);
         Usuarios *atual = retorna_score(sigla_busca);
         if (atual == NULL) {

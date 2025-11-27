@@ -46,7 +46,7 @@ void colisaoInimigos(
 );
 
 void colisaoBala(
-    Bala *bala_atual, Inimigo *inimigo_atual, int colisao, Som som
+    Bala *bala_atual, Inimigo *inimigo_atual, int colisao, Som som, int *dano_causado
 );
 
 void processamentoBala(
@@ -56,7 +56,9 @@ void processamentoBala(
     int colisao,
     Jogador *canga,
     Som *sons,
-    int *contador_morte
+    int *contador_morte,
+    int *dano_causado,
+    int *total_inimigos
 );
 
 void reajusteInimigos(Inimigo inimigos[], int *indice);
@@ -64,7 +66,7 @@ void reajusteInimigos(Inimigo inimigos[], int *indice);
 void desenharInimigo(Inimigo inimigos[], int indice, Jogador canga);
 
 void danoJogador(
-    Inimigo inimigos[], Jogador *canga, int indice, double counts, Som som
+    Inimigo inimigos[], Jogador *canga, int indice, double counts, Som som, int *dano_sofrido
 );
 
 void desenhar_vida_inimigos(Inimigo *inimigos, int quant_inimigos);

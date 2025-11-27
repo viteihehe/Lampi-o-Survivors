@@ -20,6 +20,7 @@ typedef struct {
     ALLEGRO_BITMAP *bala;
     ALLEGRO_BITMAP *grama;
     ALLEGRO_BITMAP *pedrinhas;
+    ALLEGRO_BITMAP *caveira;
 
 } FolhaSprites;
 
