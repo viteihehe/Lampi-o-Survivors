@@ -192,7 +192,11 @@ void colisaoInimigos(
 }
 
 void colisaoBala(
-    Bala *bala_atual, Inimigo *inimigo_atual, int colisao, Som som, int *dano_causado
+    Bala *bala_atual,
+    Inimigo *inimigo_atual,
+    int colisao,
+    Som som,
+    int *dano_causado
 ) {
     if (bala_atual->ativa && inimigo_atual->ativo) {
         if (abs(bala_atual->x - inimigo_atual->posx) < colisao &&
@@ -235,7 +239,7 @@ void processamentoBala(
                     (*contador_morte)++;
                     canga->pontuacao += 5;
                     (*total_inimigos)++;
-                    
+
                     al_play_sample(
                         sons->morte_inimigos,
                         0.5,
@@ -296,7 +300,12 @@ void desenharInimigo(Inimigo inimigos[], int indice, Jogador canga) {
 }
 
 void danoJogador(
-    Inimigo inimigos[], Jogador *canga, int indice, double counts, Som som, int *dano_sofrido
+    Inimigo inimigos[],
+    Jogador *canga,
+    int indice,
+    double counts,
+    Som som,
+    int *dano_sofrido
 ) {
     for (int i = 0; i < indice; i++) {
         if (!inimigos[i].ativo)
