@@ -36,7 +36,7 @@ typedef struct {
     Som sons;
 } Jogador;
 
-void capturar_movimento(ALLEGRO_EVENT evento, MapaDirecoes *teclas);
+void capturar_movimento(ALLEGRO_EVENT evento, MapaDirecoes *teclas, int *passos_dados);
 
 void capturar_mira(ALLEGRO_EVENT evento, MapaDirecoes *teclas);
 

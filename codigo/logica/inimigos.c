@@ -208,7 +208,11 @@ void colisaoInimigos(
 }
 
 void colisaoBala(
-    Bala *bala_atual, Inimigo *inimigo_atual, int colisao, Som som
+    Bala *bala_atual,
+    Inimigo *inimigo_atual,
+    int colisao,
+    Som som,
+    int *dano_causado
 ) {
     if (bala_atual->ativa && inimigo_atual->ativo) {
         if (abs(bala_atual->x - inimigo_atual->posx) < colisao &&
@@ -216,6 +220,7 @@ void colisaoBala(
             inimigo_atual->vida -= bala_atual->dano;
             bala_atual->ativa = false;
             al_play_sample(som.hit_inimigo, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, 0);
+            *dano_causado += bala_atual->dano;
         }
     }
 }
@@ -227,7 +232,10 @@ void processamentoBala(
     int colisao,
     Jogador *canga,
     Som *sons,
-    int *contador_morte
+    int *contador_morte,
+    int *dano_causado,
+    int *total_inimigos
+
 ) {
     for (int i = 0; i < *indice; i++) {
         if (!inimigos[i].ativo)
@@ -240,12 +248,14 @@ void processamentoBala(
                 temp = temp->prox;
                 continue;
             }
-            colisaoBala(b, &inimigos[i], colisao, *sons);
+            colisaoBala(b, &inimigos[i], colisao, *sons, dano_causado);
             if (!b->ativa) {
                 if (inimigos[i].vida <= 0) {
                     inimigos[i].ativo = false;
                     (*contador_morte)++;
                     canga->pontuacao += 5;
+                    (*total_inimigos)++;
+
                     al_play_sample(
                         sons->morte_inimigos,
                         0.5,
@@ -306,7 +316,12 @@ void desenharInimigo(Inimigo inimigos[], int indice, Jogador canga) {
 }
 
 void danoJogador(
-    Inimigo inimigos[], Jogador *canga, int indice, double counts, Som som
+    Inimigo inimigos[],
+    Jogador *canga,
+    int indice,
+    double counts,
+    Som som,
+    int *dano_sofrido
 ) {
     for (int i = 0; i < indice; i++) {
         if (!inimigos[i].ativo)
@@ -319,7 +334,8 @@ void danoJogador(
             counts - canga->ultimo_dano >= canga->dano_delay) {
             canga->vida -= 1;
             canga->ultimo_dano = counts;
-            al_play_sample(som.hit, 2, 0, 1, ALLEGRO_PLAYMODE_ONCE, 0);
+            al_play_sample(som.hit, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, 0);
+            *dano_sofrido += inimigos[i].dano;
         }
     }
 

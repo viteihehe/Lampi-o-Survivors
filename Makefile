@@ -27,11 +27,13 @@ debug:
 
 
 tar: ${CODIGOS}
-	gcc ${CODIGOS} ${ALLEGRO} -o ${SAIDA}
+	gcc ${CODIGOS} ${ALLEGRO} -lm -o ${SAIDA}
 	tar -czf CangasLinux.tar.gz \
 		--exclude ./materiais/sprites/desuso \
 		--exclude ./materiais/repositorio \
+		--exclude ./saves/* \
 		./materiais \
+		./saves \
 		${SAIDA}
 
 	@rm ${SAIDA}

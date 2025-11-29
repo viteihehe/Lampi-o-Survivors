@@ -53,6 +53,7 @@ typedef struct {
     double ultima_wave;
     int delay_mensagem;
     int maximo_inims;
+    Estatisticas estatisticas;
 } EstadoGlobal;
 
 /*
@@ -79,6 +80,16 @@ EstadoGlobal gerar_estado(FolhaSprites sprites, Som sons) {
         .frame_pernas = 1,
     };
 
+    Estatisticas est = {
+        .Dano_causado = 0,
+        .Dano_sofrido = 0,
+        .nivel_atingido = 0,
+        .passos_dados = 0,
+        .tempo_de_jogo = 0,
+        .pontuacao_run = 0,
+        .total_inimigos_mortos = 0
+    };
+
     EstadoGlobal globs = {
         .sons = sons,
         .sprites = sprites,
@@ -99,10 +110,15 @@ EstadoGlobal gerar_estado(FolhaSprites sprites, Som sons) {
         .contador_wave = 1,
         .ultima_wave = 0,
         .maximo_inims = 0,
+        .estatisticas = est
     };
+
+    
 
     return globs;
 }
+
+
 
 /*
     Reinicia o estado de um jogo anterior.
@@ -144,6 +160,8 @@ void waves(EstadoGlobal *globs, EPowerUps *powers) {
         }
     }
 }
+
+
 
 typedef enum {
     B_JOGAR,
@@ -254,6 +272,11 @@ int main() {
 
     ALLEGRO_FONT *fonte_titulo =
         al_load_ttf_font("./materiais/fontes/FiftiesMovies.ttf", 70, 0);
+    ALLEGRO_FONT *fonte_menor =
+        al_load_ttf_font("./materiais/fontes/FiftiesMovies.ttf", 25, 0);
+    
+    ALLEGRO_FONT *fonte_frase =
+        al_load_ttf_font("./materiais/fontes/FiftiesMovies.ttf", 50, 0);
 
     ALLEGRO_BITMAP *menu_sprite =
         al_load_bitmap("./materiais/sprites/menu2.png");
@@ -280,6 +303,7 @@ int main() {
         .grama = al_load_bitmap("./materiais/sprites/mapa/grama.png"),
         .pedrinhas = al_load_bitmap("./materiais/sprites/mapa/pedrinhas.png"),
         .canga_pernas = al_load_bitmap("./materiais/sprites/pernas.png"),
+        .caveira = al_load_bitmap("./materiais/sprites/caveira.png"),
     };
 
     // ---------
@@ -355,6 +379,11 @@ int main() {
     ALLEGRO_EVENT evento;
     for (;;) {
         al_wait_for_event(fila, &evento);
+
+        if(globs.canga.vivo) {
+            capturar_movimento(evento, &globs.canga.movimento, &globs.estatisticas.passos_dados);
+            capturar_mira(evento, &globs.canga.mira);
+        }
 
         // ----------
         // Controle de Janela
@@ -437,8 +466,7 @@ int main() {
             continue;
         }
 
-        capturar_movimento(evento, &globs.canga.movimento);
-        capturar_mira(evento, &globs.canga.mira);
+        
 
         // ----------
         // Tela de Game Over
@@ -448,6 +476,8 @@ int main() {
                 letra = 'A';
                 aux = 0;
                 selecionou = false;
+                globs.estatisticas.nivel_atingido = globs.contador_wave-1;
+                globs.estatisticas.pontuacao_run = globs.canga.pontuacao;
             }
             if (tempo != 0) {
                 tempo--;
@@ -457,35 +487,28 @@ int main() {
             al_set_audio_stream_playing(jogo_sons.musica_derrota, true);
 
             if (gravar) {
-                exibir_lista(fonte, fonte_titulo);
+
                 tela_morte(
                     evento,
                     globs.canga.pontuacao,
-                    fonte_titulo,
+                    fonte_menor,
                     fonte,
+                    fonte_frase,
                     sigla,
                     &letra,
                     &aux,
                     &selecionou,
                     jogo_sons.escolha,
-                    jogo_sons.selecao
+                    jogo_sons.selecao,
+                    globs.sprites.caveira,
+                    globs.estatisticas
                 );
 
                 if (aux == 3) {
                     salvar_arquivo(globs.canga.pontuacao, sigla);
                     gravar = false;
                 }
-            } else {
-                exibir_lista(fonte, fonte_titulo);
-                al_draw_text(
-                    fonte,
-                    COR_BRANCO,
-                    LARGURA / 2.0,
-                    700,
-                    ALLEGRO_ALIGN_CENTRE,
-                    "Aperte [espaço] para recomeçar"
-                );
-            }
+            } 
 
             if ((evento.keyboard.keycode) == ALLEGRO_KEY_SPACE) {
                 reiniciar_estado(&globs);
@@ -499,6 +522,8 @@ int main() {
                 selecionou = false;
                 gravar = true;
                 tempo = 10;
+                al_set_audio_stream_playing(jogo_sons.musica_derrota, false);
+                al_set_audio_stream_playing(jogo_sons.musica_de_fundo, true);
             }
 
             al_flip_display();
@@ -523,7 +548,6 @@ int main() {
             al_set_audio_stream_playing(jogo_sons.musica_de_fundo, false);
             al_set_audio_stream_playing(jogo_sons.musica_derrota, false);
 
-            exibir_lista(fonte, fonte_titulo);
             busca_pontucao(
                 evento,
                 fonte,
@@ -669,14 +693,17 @@ int main() {
                 28,
                 &globs.canga,
                 &globs.sons,
-                &globs.inimigos_mortos
+                &globs.inimigos_mortos,
+                &globs.estatisticas.Dano_causado,
+                &globs.estatisticas.total_inimigos_mortos
             );
             danoJogador(
                 globs.inimigos,
                 &globs.canga,
                 globs.quant_inim,
                 globs.counts,
-                globs.sons
+                globs.sons,
+                &globs.estatisticas.Dano_sofrido
             );
 
             // ----------
