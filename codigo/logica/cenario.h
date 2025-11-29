@@ -24,6 +24,8 @@ typedef struct {
     int y;
 } CoordMapa;
 
+void carregar_mapa_jogo();
+
 void desenhar_mapa(FolhaSprites sprites);
 
 int colide_no_cenario(int x, int y, int tam_box);

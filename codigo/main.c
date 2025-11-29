@@ -4,6 +4,7 @@
 #include "logica/jogador.h"
 #include "logica/powerups.h"
 #include "logica/telas.h"
+#include "midia.h"
 #include "utils.h"
 #include <allegro5/allegro_acodec.h>
 #include <allegro5/allegro_audio.h>
@@ -113,12 +114,8 @@ EstadoGlobal gerar_estado(FolhaSprites sprites, Som sons) {
         .estatisticas = est
     };
 
-    
-
     return globs;
 }
-
-
 
 /*
     Reinicia o estado de um jogo anterior.
@@ -161,8 +158,6 @@ void waves(EstadoGlobal *globs, EPowerUps *powers) {
     }
 }
 
-
-
 typedef enum {
     B_JOGAR,
     B_PONTUACAO,
@@ -175,13 +170,13 @@ typedef enum {
 */
 void desenhar_menu(
     int *indice_botao_ativo,
-    ALLEGRO_BITMAP *fundo,
+    FolhaSprites sprites,
     Som sons,
     ALLEGRO_FONT *fonte_menu,
     ALLEGRO_FONT *fonte_botao,
     ALLEGRO_EVENT evento
 ) {
-    al_draw_bitmap(fundo, 0, 0, 0);
+    desenhar_mapa(sprites);
 
     // Título
     desenhar_caixa_texto(
@@ -274,12 +269,9 @@ int main() {
         al_load_ttf_font("./materiais/fontes/FiftiesMovies.ttf", 70, 0);
     ALLEGRO_FONT *fonte_menor =
         al_load_ttf_font("./materiais/fontes/FiftiesMovies.ttf", 25, 0);
-    
+
     ALLEGRO_FONT *fonte_frase =
         al_load_ttf_font("./materiais/fontes/FiftiesMovies.ttf", 50, 0);
-
-    ALLEGRO_BITMAP *menu_sprite =
-        al_load_bitmap("./materiais/sprites/menu2.png");
 
     // ----------
     // Sprites
@@ -380,8 +372,10 @@ int main() {
     for (;;) {
         al_wait_for_event(fila, &evento);
 
-        if(globs.canga.vivo) {
-            capturar_movimento(evento, &globs.canga.movimento, &globs.estatisticas.passos_dados);
+        if (globs.canga.vivo) {
+            capturar_movimento(
+                evento, &globs.canga.movimento, &globs.estatisticas.passos_dados
+            );
             capturar_mira(evento, &globs.canga.mira);
         }
 
@@ -432,6 +426,7 @@ int main() {
                     switch (botao_menu_selecionado) {
                     case B_JOGAR:
                         usuario_no_menu = false;
+                        carregar_mapa_jogo();
                         al_set_audio_stream_playing(jogo_sons.menu, false);
                         al_set_audio_stream_playing(
                             jogo_sons.musica_de_fundo, true
@@ -457,7 +452,7 @@ int main() {
 
             desenhar_menu(
                 &botao_menu_selecionado,
-                menu_sprite,
+                globs.sprites,
                 jogo_sons,
                 fonte_titulo,
                 fonte,
@@ -465,8 +460,6 @@ int main() {
             );
             continue;
         }
-
-        
 
         // ----------
         // Tela de Game Over
@@ -476,7 +469,7 @@ int main() {
                 letra = 'A';
                 aux = 0;
                 selecionou = false;
-                globs.estatisticas.nivel_atingido = globs.contador_wave-1;
+                globs.estatisticas.nivel_atingido = globs.contador_wave - 1;
                 globs.estatisticas.pontuacao_run = globs.canga.pontuacao;
             }
             if (tempo != 0) {
@@ -508,7 +501,7 @@ int main() {
                     salvar_arquivo(globs.canga.pontuacao, sigla);
                     gravar = false;
                 }
-            } 
+            }
 
             if ((evento.keyboard.keycode) == ALLEGRO_KEY_SPACE) {
                 reiniciar_estado(&globs);

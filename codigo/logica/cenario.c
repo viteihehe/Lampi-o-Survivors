@@ -1,5 +1,8 @@
 #include "cenario.h"
 
+// ----------
+// Mapa Real
+// ----------
 int mapa_blocos[MAPA_LINHAS][MAPA_COLUNAS] = {
     {A, A, A, A, A, A, A, A, N, N, N, A, A, A, A, A, P, P, P, P},
     {A, N, N, N, P, P, N, N, N, N, N, N, N, N, N, N, P, P, P, P},
@@ -38,6 +41,60 @@ int mapa_decos[MAPA_LINHAS][MAPA_COLUNAS] = {
     {},
 };
 
+// ----------
+// Mapa Real
+// ----------
+int mapa_menu_blocos[MAPA_LINHAS][MAPA_COLUNAS] = {
+    {N, N, N, N, N, N, N, N, N, N, N, N, A, A, A, A, A, A, A, N},
+    {N, N, N, N, N, N, N, C, N, N, N, N, N, N, N, A, A, N, N, N},
+    {N, N, N, N, N, N, N, N, P, N, N, N, N, C, N, N, N, N, N, N},
+    {N, N, N, N, N, C, N, N, N, N, N, N, N, N, N, N, N, N, N, N},
+    {N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N},
+    {N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, P, N, N, N},
+    {N, A, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N},
+    {N, A, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, C, N, N},
+    {N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N},
+    {N, N, A, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N},
+    {N, C, A, N, N, N, N, N, N, N, N, N, N, N, N, C, N, N, P, P},
+    {N, A, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, P, P, P},
+    {N, N, N, N, P, N, N, N, N, N, N, N, N, N, N, N, N, N, A, P},
+    {N, N, C, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, A, A},
+    {N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, A},
+    {N, N, N, N, N, N, A, A, A, N, N, N, N, N, N, N, N, N, N, N},
+};
+
+int mapa_menu_decos[MAPA_LINHAS][MAPA_COLUNAS] = {
+    {DG, DG},
+    {DG, DG},
+    {DG, DN, DN, DP},
+    {DN, DN, DP, DN, DN, DN, DN, DN, DN, DN, DN, DN, DN, DN, DN, DN, DN, DP},
+    {DN, DN, DP},
+    {},
+    {},
+    {},
+    {DN, DN, DN, DN, DN, DN, DN, DN, DN, DN, DN, DN, DN, DN, DP, DP},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {DN, DN, DN, DN, DN, DN, DN, DN, DN, DN, DN, DN, DN, DN, DG, DG},
+    {DN, DN, DN, DP, DP, DN, DN, DN, DN, DN, DN, DN, DN, DG, DG, DG, DG},
+};
+
+int (*ptr_blocos)[MAPA_COLUNAS] = mapa_menu_blocos;
+int (*ptr_decos)[MAPA_COLUNAS] = mapa_menu_decos;
+
+/*
+    Troca o mapa do menu pelo mapa real... só uma vez na vida.
+*/
+void carregar_mapa_jogo() {
+    if (ptr_blocos == mapa_menu_blocos) {
+        ptr_blocos = mapa_blocos;
+        ptr_decos = mapa_decos;
+    }
+}
+
 /*
     Uma função cujo único propósito é redesenhar o cenário.
 */
@@ -52,7 +109,7 @@ void desenhar_mapa(FolhaSprites sprites) {
             // ----------
             // Blocos
             // ----------
-            switch (mapa_blocos[lin][col]) {
+            switch (ptr_blocos[lin][col]) {
             case C:
                 al_draw_scaled_bitmap(
                     sprites.sombra, 0, 0, 16, 16, x, y, 48, 48, 0
@@ -84,7 +141,7 @@ void desenhar_mapa(FolhaSprites sprites) {
             // ----------
             // Decorações
             // ----------
-            switch (mapa_decos[lin][col]) {
+            switch (ptr_decos[lin][col]) {
             case DG:
                 al_draw_scaled_bitmap(
                     sprites.grama, 0, 0, 16, 16, x, y, 48, 48, 0
