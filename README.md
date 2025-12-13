@@ -1,6 +1,9 @@
 # Canga Survivors
 Canga Survivors é um jogo estilo rogue-like com temática nordestina, escrito utilizando a linguagem C em conjunto com a biblioteca Allegro5.
 
+![Menu](./materiais/repositorio/menujogo.png)
+![Partida](./materiais/repositorio/partidajogo.png)
+
 ## Compilando
 ### Dependências
 É necessário ter o GCC, o Make e toda a biblioteca Allegro5 instalados na sua máquina.
@@ -27,11 +30,6 @@ O jogo já é executado automaticamente após cada build, mas se quiser abrir se
 ```
 ./jogo.out
 ```
-
-## Bugs Conhecidos
-- Em algumas situações o jogo pode sofrer input lag.
-- Os inimigos podem atravessar ou ficarem presos no cenário.
-- As balas do jogador são alocadas permanentemente na memória.
 
 ## Apêndice
 ![QueJogo](./materiais/repositorio/quejogo.jpeg)
