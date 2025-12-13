@@ -31,9 +31,9 @@ tar: ${CODIGOS}
 	tar -czf CangasLinux.tar.gz \
 		--exclude ./materiais/sprites/desuso \
 		--exclude ./materiais/repositorio \
-		--exclude ./saves/* \
-		./materiais \
-		./saves \
+		--exclude ./dados/* \
+		./materiais/ \
+		./dados/ \
 		${SAIDA}
 
 	@rm ${SAIDA}

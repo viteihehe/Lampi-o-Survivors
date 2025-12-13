@@ -239,7 +239,7 @@ void tela_morte(
 
 void salvar_arquivo(int pontos, char sigla[]) {
     char dir[50];
-    sprintf(dir, "./saves/pontuacoes.bin");
+    sprintf(dir, "./dados/pontuacoes.bin");
     FILE *file;
 
     bool gravado = false;
@@ -269,7 +269,7 @@ void exibir_lista(
         al_draw_rectangle(x1, y1, x2, y2, COR_BRANCO, 10);
 
         char dir[50];
-        sprintf(dir, "./saves/pontuacoes.bin");
+        sprintf(dir, "./dados/pontuacoes.bin");
         FILE *file;
         file = fopen(dir, "rb");
         if (file == NULL) {
@@ -356,7 +356,7 @@ void exibir_lista(
         al_draw_rectangle(x1, y1, x2, y2, COR_BRANCO, 10);
 
         char dir[50];
-        sprintf(dir, "./saves/pontuacoes.bin");
+        sprintf(dir, "./dados/pontuacoes.bin");
         FILE *file;
         file = fopen(dir, "rb");
         if (file == NULL) {
@@ -441,7 +441,7 @@ void exibir_lista(
 
 Usuarios *retorna_score(char sigla[]) {
     char dir[50];
-    sprintf(dir, "./saves/pontuacoes.bin");
+    sprintf(dir, "./dados/pontuacoes.bin");
     FILE *file = fopen(dir, "rb");
     if (file == NULL) {
         return NULL;
