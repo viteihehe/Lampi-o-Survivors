@@ -67,10 +67,10 @@ void criarInimigo(
             .tamanho_sprite = 64,
             .total_frames = 2,
 
-            .vida = 120,
-            .vida_max = 120,
+            .vida = 150,
+            .vida_max = 150,
             .dano = 1,
-            .velocidade = 1,
+            .velocidade = 0.8,
             .ativo = true,
             .contador_frames = 0,
         };
@@ -84,10 +84,10 @@ void criarInimigo(
             .tamanho_sprite = 64,
             .total_frames = 2,
 
-            .vida = 65,
-            .vida_max = 65,
+            .vida = 75,
+            .vida_max = 75,
             .dano = 1,
-            .velocidade = 1,
+            .velocidade = 2,
             .ativo = true,
         };
     }
@@ -111,34 +111,45 @@ void inimigosLogica(
     }
 
     for (int i = 0; i < *indice; i++) {
-        int x_futuro = inimigos[i].posx;
-        int y_futuro = inimigos[i].posy;
+        float x_futuro = inimigos[i].posx;
+        float y_futuro = inimigos[i].posy;
 
-        if (inimigos[i].posx < canga.x) {
-            x_futuro += inimigos[i].velocidade;
+        float dist_calculada_x = fabs(inimigos[i].posx - canga.x);
+        if (dist_calculada_x > inimigos[i].velocidade) {
+            dist_calculada_x = inimigos[i].velocidade;
         }
 
-        if (inimigos[i].posx > canga.x) {
-            x_futuro -= inimigos[i].velocidade;
-        }
-
-        if (inimigos[i].posy < canga.y) {
-            y_futuro += inimigos[i].velocidade;
-        }
-
-        if (inimigos[i].posy > canga.y) {
-            y_futuro -= inimigos[i].velocidade;
+        float dist_calculada_y = fabs(inimigos[i].posy - canga.y);
+        if (dist_calculada_y > inimigos[i].velocidade) {
+            dist_calculada_y = inimigos[i].velocidade;
         }
 
         if (inimigos[i].comportamento == FORMIGA) {
-            int distancia = sqrt(
+            float distancia = sqrt(
                 pow(canga.x - inimigos[i].posx, 2) +
                 pow(canga.y - inimigos[i].posy, 2)
             );
 
             if (distancia < 200) {
-                continue;
+                dist_calculada_x /= 2;
+                dist_calculada_y /= 2;
             }
+        }
+
+        if (inimigos[i].posx < canga.x) {
+            x_futuro += dist_calculada_x;
+        }
+
+        if (inimigos[i].posx > canga.x) {
+            x_futuro -= dist_calculada_x;
+        }
+
+        if (inimigos[i].posy < canga.y) {
+            y_futuro += dist_calculada_y;
+        }
+
+        if (inimigos[i].posy > canga.y) {
+            y_futuro -= dist_calculada_y;
         }
 
         // Checando se dá pra mover
@@ -170,13 +181,13 @@ void colisaoInimigos(
                 continue;
             int colisao_x = tamanho;
             int colisao_y = tamanho;
-            if (abs(inimigos[i].posx - inimigos[j].posx) <= colisao_x &&
-                abs(inimigos[i].posy - inimigos[j].posy) <= colisao_y) {
-                int x_futuro_i = inimigos[i].posx;
-                int y_futuro_i = inimigos[i].posy;
+            if (fabs(inimigos[i].posx - inimigos[j].posx) <= colisao_x &&
+                fabs(inimigos[i].posy - inimigos[j].posy) <= colisao_y) {
+                float x_futuro_i = inimigos[i].posx;
+                float y_futuro_i = inimigos[i].posy;
 
-                int x_futuro_j = inimigos[j].posx;
-                int y_futuro_j = inimigos[j].posy;
+                float x_futuro_j = inimigos[j].posx;
+                float y_futuro_j = inimigos[j].posy;
 
                 if (inimigos[i].posx < inimigos[j].posx) {
                     x_futuro_i -= inimigos[i].velocidade / 1.5;
@@ -215,8 +226,8 @@ void colisaoBala(
     int *dano_causado
 ) {
     if (bala_atual->ativa && inimigo_atual->ativo) {
-        if (abs(bala_atual->x - inimigo_atual->posx) < colisao &&
-            abs(bala_atual->y - inimigo_atual->posy) < colisao) {
+        if (fabsf(bala_atual->x - inimigo_atual->posx) < colisao &&
+            fabsf(bala_atual->y - inimigo_atual->posy) < colisao) {
             inimigo_atual->vida -= bala_atual->dano;
             bala_atual->ativa = false;
             al_play_sample(som.hit_inimigo, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, 0);
@@ -329,8 +340,8 @@ void danoJogador(
 
         int colisaox = 40;
         int colisaoy = 40;
-        if ((abs(inimigos[i].posx - canga->x) < colisaox) &&
-            (abs(inimigos[i].posy - canga->y) < colisaoy) &&
+        if ((fabsf(inimigos[i].posx - canga->x) < colisaox) &&
+            (fabsf(inimigos[i].posy - canga->y) < colisaoy) &&
             counts - canga->ultimo_dano >= canga->dano_delay) {
             canga->vida -= 1;
             canga->ultimo_dano = counts;

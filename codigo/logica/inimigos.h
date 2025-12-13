@@ -13,8 +13,8 @@ typedef enum {
 typedef struct {
     EComportamento comportamento;
     int ultimo_ataque;
-    int posx;
-    int posy;
+    float posx;
+    float posy;
     ALLEGRO_BITMAP *sprite;
     int vida;
     int dano;
@@ -46,7 +46,11 @@ void colisaoInimigos(
 );
 
 void colisaoBala(
-    Bala *bala_atual, Inimigo *inimigo_atual, int colisao, Som som, int *dano_causado
+    Bala *bala_atual,
+    Inimigo *inimigo_atual,
+    int colisao,
+    Som som,
+    int *dano_causado
 );
 
 void processamentoBala(
@@ -66,7 +70,12 @@ void reajusteInimigos(Inimigo inimigos[], int *indice);
 void desenharInimigo(Inimigo inimigos[], int indice, Jogador canga);
 
 void danoJogador(
-    Inimigo inimigos[], Jogador *canga, int indice, double counts, Som som, int *dano_sofrido
+    Inimigo inimigos[],
+    Jogador *canga,
+    int indice,
+    double counts,
+    Som som,
+    int *dano_sofrido
 );
 
 void desenhar_vida_inimigos(Inimigo *inimigos, int quant_inimigos);
