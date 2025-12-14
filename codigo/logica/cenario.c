@@ -163,7 +163,7 @@ void desenhar_mapa(FolhaSprites sprites) {
    quadrada e retorna um booleano dizendo se a box toca em alguma peça do
    cenário ou não.
 */
-int colide_no_cenario(int x, int y, int tam_box) {
+int colide_no_cenario(float x, float y, int tam_box) {
     tam_box /= 2; // Tem que ser sempre a metade pra centralizar
     tam_box -= 1; // Pixelzinho só pra não ficar sempre justo
 
@@ -217,7 +217,7 @@ int colide_no_cenario(int x, int y, int tam_box) {
 */
 CoordMapa pegar_coord_centro_bloco(int x_bloco, int y_bloco) {
     return (CoordMapa){
-        .x = (x_bloco * TAM_BLOCOS) + TAM_BLOCOS / 2,
-        .y = (y_bloco * TAM_BLOCOS) + TAM_BLOCOS / 2,
+        .x = (x_bloco * TAM_BLOCOS) + TAM_BLOCOS / 2.0,
+        .y = (y_bloco * TAM_BLOCOS) + TAM_BLOCOS / 2.0,
     };
 }

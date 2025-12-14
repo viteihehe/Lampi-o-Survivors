@@ -20,14 +20,14 @@ enum EDecoracao {
 };
 
 typedef struct {
-    int x;
-    int y;
+    float x;
+    float y;
 } CoordMapa;
 
 void carregar_mapa_jogo();
 
 void desenhar_mapa(FolhaSprites sprites);
 
-int colide_no_cenario(int x, int y, int tam_box);
+int colide_no_cenario(float x, float y, int tam_box);
 
 CoordMapa pegar_coord_centro_bloco(int x_bloco, int y_bloco);

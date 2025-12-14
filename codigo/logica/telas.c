@@ -3,6 +3,7 @@
 #include "../utils.h"
 #include "quicksort.h"
 #include <allegro5/allegro_audio.h>
+#include <allegro5/allegro_font.h>
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/bitmap.h>
@@ -228,7 +229,7 @@ void tela_morte(
 
 void salvar_arquivo(int pontos, char sigla[]) {
     char dir[50];
-    sprintf(dir, "./saves/pontuacoes.bin");
+    sprintf(dir, "./dados/pontuacoes.bin");
     FILE *file;
 
     bool gravado = false;
@@ -258,7 +259,7 @@ void exibir_lista(
         al_draw_rectangle(x1, y1, x2, y2, COR_BRANCO, 10);
 
         char dir[50];
-        sprintf(dir, "./saves/pontuacoes.bin");
+        sprintf(dir, "./dados/pontuacoes.bin");
         FILE *file;
         file = fopen(dir, "rb");
         if (file == NULL) {
@@ -345,7 +346,7 @@ void exibir_lista(
         al_draw_rectangle(x1, y1, x2, y2, COR_BRANCO, 10);
 
         char dir[50];
-        sprintf(dir, "./saves/pontuacoes.bin");
+        sprintf(dir, "./dados/pontuacoes.bin");
         FILE *file;
         file = fopen(dir, "rb");
         if (file == NULL) {
@@ -430,7 +431,7 @@ void exibir_lista(
 
 Usuarios *retorna_score(char sigla[]) {
     char dir[50];
-    sprintf(dir, "./saves/pontuacoes.bin");
+    sprintf(dir, "./dados/pontuacoes.bin");
     FILE *file = fopen(dir, "rb");
     if (file == NULL) {
         return NULL;
@@ -545,4 +546,65 @@ void busca_pontucao(
             free(atual);
         }
     }
+}
+
+void desenhar_guias(FolhaSprites sprites, ALLEGRO_FONT *fonte) {
+    int larg = 200;
+    int altu = 150;
+
+    // WASD
+    desenhar_caixa_texto(
+        "", COR_BRANCO, 0.25 * LARGURA, 0.75 * ALTURA, larg, altu, fonte
+    );
+
+    desenhar_caixa_texto(
+        "Andar",
+        COR_BRANCO,
+        0.25 * LARGURA,
+        0.75 * ALTURA - altu / 2.0 - 10,
+        110,
+        50,
+        fonte
+    );
+
+    al_draw_scaled_bitmap(
+        sprites.guia_wasd,
+        0,
+        0,
+        64,
+        64,
+        0.25 * LARGURA - 100,
+        0.75 * ALTURA - 85,
+        200,
+        200,
+        0
+    );
+
+    // Setas
+    desenhar_caixa_texto(
+        "", COR_BRANCO, 0.75 * LARGURA, 0.75 * ALTURA, larg, altu, fonte
+    );
+
+    desenhar_caixa_texto(
+        "Atirar",
+        COR_BRANCO,
+        0.75 * LARGURA,
+        0.75 * ALTURA - altu / 2.0 - 10,
+        110,
+        50,
+        fonte
+    );
+
+    al_draw_scaled_bitmap(
+        sprites.guia_setas,
+        0,
+        0,
+        64,
+        64,
+        0.75 * LARGURA - 100,
+        0.75 * ALTURA - 85,
+        200,
+        200,
+        0
+    );
 }
