@@ -557,9 +557,7 @@ int main() {
                     80,
                     fonte
                 );
-            }
-
-            if ((evento.keyboard.keycode) == ALLEGRO_KEY_SPACE) {
+                if ((evento.keyboard.keycode) == ALLEGRO_KEY_SPACE) {
                 reiniciar_estado(&globs);
                 botao_menu_selecionado = 0;
                 letra = 'A';
@@ -573,6 +571,7 @@ int main() {
                 tempo = 10;
                 al_set_audio_stream_playing(jogo_sons.musica_derrota, false);
                 al_set_audio_stream_playing(jogo_sons.musica_de_fundo, true);
+            }
             }
 
             al_flip_display();
